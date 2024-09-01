@@ -68,7 +68,7 @@ curl --location 'localhost:3333/api/auth/users' \
 curl --location 'localhost:3333/api/auth/token' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "email": "jakub@exampleemail.com",
+    "email": "test@exampleemail.com",
     "password": "testpassword1"
 }'
 ```
