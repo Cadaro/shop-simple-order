@@ -1,43 +1,23 @@
-import { test } from '@japa/runner'
+import { test } from '@japa/runner';
+import { IItem } from '#types/item';
 
 test.group('Items list', () => {
-  test('get a list of items in shop', async ({ client }) => {
-    const response = await client.get('/items')
+  test('get a list of items in the shop', async ({ assert, client }) => {
+    const response = await client.get('/api/items');
 
-    response.assertStatus(200)
-    // response.assertBody([
-    //   {
-    //     created: '22.05.2023, 19:40:45',
-    //     id: '-NW3ybVwEhLcsbZgjcoh',
-    //     item: {
-    //       category: 'spodnie męskie',
-    //       description: 'Bez zapięcia, warkoczowy splot. Długość 77 cm, rękaw 65 cm, biust 56 cm.',
-    //       id: '1684784445490-sweter Yessica',
-    //       image: [
-    //         {
-    //           imageUrl: 'https://serwer1998919.home.pl/moku/images/whitecardigan1.jpg',
-    //         },
-    //         {
-    //           imageUrl: 'https://serwer1998919.home.pl/moku/images/whitecardigan2.jpg',
-    //         },
-    //       ],
-    //       itemPrice: {
-    //         currency: 'PLN',
-    //         price: 15,
-    //       },
-    //       productName: 'sweter',
-    //       productProperty: {
-    //         brand: 'Yessica',
-    //         color: 'WHITE',
-    //         condition: 'bardzo dobry',
-    //         size: 'L-XL/42-44',
-    //       },
-    //     },
-    //     status: {
-    //       currentStatus: 'NEW',
-    //       statusDate: '2.09.2023, 15:34:59',
-    //     },
-    //   },
-    // ])
-  })
-})
+    response.assertStatus(200);
+    assert.isArray(response.body());
+    assert.includeDeepMembers(response.body(), Array<IItem>());
+  });
+});
+
+test.group('Typeof item list', () => {
+  test('item list has typeof array of IItem', async ({ client, expectTypeOf }) => {
+    const response = await client.get('/api/items');
+
+    response.assertStatus(200);
+
+    const res: Array<IItem> = response.body();
+    expectTypeOf(res).toEqualTypeOf<Array<IItem>>();
+  });
+});
