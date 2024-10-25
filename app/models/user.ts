@@ -6,7 +6,6 @@ import { withAuthFinder } from '@adonisjs/auth/mixins/lucid';
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens';
 import type { HasMany } from '@adonisjs/lucid/types/relations';
 import Order from '#models/order';
-import Cart from '#models/cart';
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
   passwordColumnName: 'password',
@@ -15,9 +14,6 @@ const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
 export default class User extends compose(BaseModel, AuthFinder) {
   @hasMany(() => Order, { foreignKey: 'userId' })
   declare orders: HasMany<typeof Order>;
-
-  @hasMany(() => Cart, { foreignKey: 'userId' })
-  declare cart: HasMany<typeof Cart>;
 
   @column({ isPrimary: true })
   declare id: number;
