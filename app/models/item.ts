@@ -1,31 +1,34 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { DateTime } from 'luxon';
+import { BaseModel, column } from '@adonisjs/lucid/orm';
 
 export default class Item extends BaseModel {
   @column({ isPrimary: true })
-  declare id: number
+  declare id: number;
 
   @column()
-  declare itemId: string
+  declare itemId: string;
 
   @column()
-  declare itemDescription: string
+  declare itemDescription: string;
 
   @column()
-  declare price: number
+  declare price: number;
 
   @column()
-  declare priceCurrency: string
+  declare priceCurrency: string;
 
   @column()
-  declare name: string
+  declare name: string;
 
   @column()
-  declare size: string
+  declare size: string;
+
+  @column()
+  declare availableQty: number;
 
   @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime
+  declare createdAt: DateTime;
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime
+  declare updatedAt: DateTime;
 }

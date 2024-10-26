@@ -5,4 +5,5 @@ export interface IItem {
   itemName: string;
   itemDescription: string;
   itemSize: string;
+  itemAvailableQty: number;
 }
