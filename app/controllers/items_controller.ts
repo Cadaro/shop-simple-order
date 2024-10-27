@@ -14,6 +14,7 @@ export default class ItemsController {
         itemPrice: i.price,
         itemPriceCurrency: i.priceCurrency,
         itemSize: i.size,
+        itemAvailableQty: Boolean(i.availableQty) ? i.availableQty : 0,
       });
     }
     return response.status(200).send(mappedItems);
