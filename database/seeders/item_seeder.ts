@@ -1,6 +1,6 @@
-import Item from '#models/item'
-import { BaseSeeder } from '@adonisjs/lucid/seeders'
-import { randomUUID } from 'crypto'
+import Item from '#models/item';
+import { BaseSeeder } from '@adonisjs/lucid/seeders';
+import { randomUUID } from 'crypto';
 
 export default class extends BaseSeeder {
   async run() {
@@ -12,6 +12,7 @@ export default class extends BaseSeeder {
         price: 9.99,
         priceCurrency: 'EUR',
         size: 'M',
+        availableQty: 99,
       },
       {
         itemId: randomUUID(),
@@ -20,6 +21,7 @@ export default class extends BaseSeeder {
         price: 7.99,
         priceCurrency: 'EUR',
         size: 'M',
+        availableQty: 72,
       },
       {
         itemId: randomUUID(),
@@ -28,7 +30,8 @@ export default class extends BaseSeeder {
         price: 7.99,
         priceCurrency: 'EUR',
         size: 'L',
+        availableQty: 81,
       },
-    ])
+    ]);
   }
 }
