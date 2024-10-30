@@ -1,9 +1,14 @@
 export interface IItem {
   itemId: string;
-  itemPrice: number;
-  itemPriceCurrency: string;
-  itemName: string;
+  price: number;
+  priceCurrency: string;
+  name: string;
   itemDescription: string;
-  itemSize: string;
-  itemAvailableQty: number;
+  size: string;
+  availableQty: number;
+}
+
+export interface IItemUpdate {
+  itemId: string;
+  itemReservedQty: number;
 }

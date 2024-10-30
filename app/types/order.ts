@@ -10,7 +10,7 @@ export interface IOrderSku {
   currency: string;
 }
 
-export interface IOrderCreated {
+export interface IOrderData {
   orderId: string;
   items: Array<IOrderSku>;
 }
