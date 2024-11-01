@@ -42,14 +42,13 @@ export default class OrdersController {
       });
     }
 
-    const itemUpdate: IItemUpdate = {
-      itemId: orderedItems.data[0].itemId,
-      itemReservedQty: orderedItems.data[0].qty,
-    };
+    const itemUpdate = Array<IItemUpdate>();
+    orderedItems.data.map((item) => {
+      itemUpdate.push({ itemId: item.itemId, itemReservedQty: item.qty });
+    });
 
     try {
       await new StockService().updateStock(itemUpdate);
-
       const savedOrderHead = await Order.create(orderHead);
 
       const savedOrderSku = await savedOrderHead.related('order_details').createMany(orderSku);
