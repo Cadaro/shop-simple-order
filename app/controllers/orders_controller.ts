@@ -4,8 +4,8 @@ import { createOrderDetailValidator } from '#validators/order_detail';
 import type { HttpContext } from '@adonisjs/core/http';
 import { randomUUID } from 'crypto';
 import { IOrderData, IOrderHead, IOrderSku } from '#types/order';
-import env from '#start/env';
 import { IItemUpdate } from '#types/item';
+import StockService from '#services/stock_service';
 
 export default class OrdersController {
   async index({ auth, response }: HttpContext) {
@@ -47,36 +47,28 @@ export default class OrdersController {
       itemReservedQty: orderedItems.data[0].qty,
     };
 
-    const res = await fetch(
-      `${env.get('PROTOCOL')}://${env.get('HOST')}:${env.get('PORT')}/api/items/`,
-      {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify(itemUpdate),
+    try {
+      await new StockService().updateStock(itemUpdate);
+
+      const savedOrderHead = await Order.create(orderHead);
+
+      const savedOrderSku = await savedOrderHead.related('order_details').createMany(orderSku);
+
+      if (!savedOrderSku) {
+        return response.badRequest();
       }
-    );
+      const createdOrder: IOrderData = {
+        orderId,
+        items: orderSku,
+      };
 
-    if (res.status !== 204) {
-      const err = await res.json();
-      return response.conflict(err);
+      return response.status(200).send(createdOrder);
+    } catch (error) {
+      return response.badRequest({
+        error: 'Stock is not available for your order',
+        details: error,
+      });
     }
-
-    const savedOrderHead = await Order.create(orderHead);
-
-    const savedOrderSku = await savedOrderHead.related('order_details').createMany(orderSku);
-
-    if (!savedOrderSku) {
-      return response.internalServerError();
-    }
-
-    const createdOrder: IOrderData = {
-      orderId,
-      items: orderSku,
-    };
-
-    return response.status(200).send(createdOrder);
   }
 
   async show({ auth, params, response }: HttpContext) {

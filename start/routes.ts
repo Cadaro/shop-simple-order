@@ -18,7 +18,7 @@ import CartController from '#controllers/cart_controller';
 router
   .group(() => {
     router.group(() => {
-      router.resource('items', ItemsController).apiOnly().only(['show', 'index', 'store']);
+      router.resource('items', ItemsController).apiOnly().only(['show', 'index']);
       router
         .resource('orders', OrdersController)
         .apiOnly()
