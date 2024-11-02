@@ -16,7 +16,7 @@ import testUtils from '@adonisjs/core/services/test_utils';
  */
 export const plugins: Config['plugins'] = [
   assert(),
-  apiClient(),
+  apiClient('http://localhost:3333'),
   pluginAdonisJS(app),
   expectTypeOf(),
 ];

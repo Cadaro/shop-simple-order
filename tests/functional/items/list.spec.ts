@@ -7,7 +7,18 @@ test.group('Items list', () => {
 
     response.assertStatus(200);
     assert.isArray(response.body());
-    assert.includeDeepMembers(response.body(), Array<IItem>());
+    assert.onlyProperties(
+      (response.body() as Array<IItem>)[0],
+      Object.keys({
+        itemId: 'affcd999-ca5b-4ca6-812e-9650408ed8a1',
+        itemDescription: 'It is a nice test item, very soft. Pls buy me.',
+        name: 'Test item',
+        price: 9.99,
+        priceCurrency: 'EUR',
+        size: 'M',
+        availableQty: 10,
+      })
+    );
   });
 });
 
