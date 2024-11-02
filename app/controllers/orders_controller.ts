@@ -4,7 +4,7 @@ import { createOrderDetailValidator } from '#validators/order_detail';
 import type { HttpContext } from '@adonisjs/core/http';
 import { randomUUID } from 'crypto';
 import { IOrderData, IOrderHead, IOrderSku } from '#types/order';
-import { IItemUpdate } from '#types/item';
+import { IItemOrder } from '#types/item';
 import StockService from '#services/stock_service';
 
 export default class OrdersController {
@@ -42,13 +42,16 @@ export default class OrdersController {
       });
     }
 
-    const itemUpdate = Array<IItemUpdate>();
+    const itemUpdate = Array<IItemOrder>();
     orderedItems.data.map((item) => {
-      itemUpdate.push({ itemId: item.itemId, itemReservedQty: item.qty });
+      itemUpdate.push({ itemId: item.itemId, reservedQty: item.qty });
     });
 
     try {
-      await new StockService().updateStock(itemUpdate);
+      const stockService = new StockService();
+
+      await stockService.updateStock(itemUpdate);
+
       const savedOrderHead = await Order.create(orderHead);
 
       const savedOrderSku = await savedOrderHead.related('order_details').createMany(orderSku);

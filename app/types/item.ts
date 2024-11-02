@@ -8,7 +8,7 @@ export interface IItem {
   availableQty: number;
 }
 
-export interface IItemUpdate {
+export interface IItemOrder {
   itemId: string;
-  itemReservedQty: number;
+  reservedQty: number;
 }
