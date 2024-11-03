@@ -1,10 +1,8 @@
-import Item from '#models/item';
-import Order from '#models/order';
 import { createOrderDetailValidator } from '#validators/order_detail';
 import type { HttpContext } from '@adonisjs/core/http';
-import { randomUUID } from 'crypto';
-import { IOrderData, IOrderHead, IOrderSku } from '#types/order';
+import { IOrderData } from '#types/order';
 import StockService from '#services/stock_service';
+import OrderService from '#services/order_service';
 
 export default class OrdersController {
   async index({ auth, response }: HttpContext) {
@@ -12,9 +10,10 @@ export default class OrdersController {
       return response.unauthorized();
     }
 
-    const orderHead: IOrderHead[] = await Order.findManyBy('userId', auth.user!.id);
+    const orderService = new OrderService();
+    const orderList = await orderService.fetchUserOrderList(auth.user!.id);
 
-    return response.status(200).send(orderHead);
+    return response.status(200).send(orderList);
   }
 
   async store({ auth, request, response }: HttpContext) {
@@ -22,46 +21,21 @@ export default class OrdersController {
       return response.unauthorized();
     }
 
-    const orderId = randomUUID();
     const orderedItems = await request.validateUsing(createOrderDetailValidator);
-
-    const orderHead: IOrderHead = { orderId, userId: auth.user!.id };
-    let orderSku = Array<IOrderSku>();
-
-    for (const o of orderedItems.data) {
-      const item = await Item.findBy({ itemId: o.itemId });
-      if (!item) {
-        return response.badRequest();
-      }
-      orderSku.push({
-        itemId: o.itemId,
-        qty: o.qty,
-        itemPrice: item!.price,
-        currency: item!.priceCurrency,
-      });
-    }
 
     try {
       const stockService = new StockService();
+      const orderService = new OrderService();
+      await stockService.updateStock(orderedItems.details);
+      const orderData: IOrderData = await orderService.createOrder(
+        orderedItems.details,
+        auth.user!.id
+      );
 
-      await stockService.updateStock(orderedItems.data);
-
-      const savedOrderHead = await Order.create(orderHead);
-
-      const savedOrderSku = await savedOrderHead.related('order_details').createMany(orderSku);
-
-      if (!savedOrderSku) {
-        return response.badRequest();
-      }
-      const createdOrder: IOrderData = {
-        orderId,
-        items: orderSku,
-      };
-
-      return response.status(200).send(createdOrder);
+      return response.status(200).send(orderData);
     } catch (error) {
       return response.badRequest({
-        error: 'Stock is not available for your order',
+        error: 'Order could not be created due to errors',
         details: error,
       });
     }
@@ -72,23 +46,12 @@ export default class OrdersController {
       return response.unauthorized();
     }
 
-    const orderHead = await auth
-      .user!.related('orders')
-      .query()
-      .where('orderId', params.id)
-      .first();
-
-    if (!orderHead) {
+    const orderService = new OrderService();
+    const orderData = await orderService.fetchUserOrderDetails(params.id, auth.user!.id);
+    if (!orderData) {
       return response.notFound();
     }
 
-    const orderSku: Array<IOrderSku> = await orderHead!.related('order_details').query();
-
-    const foundOrder: IOrderData = {
-      orderId: orderHead!.orderId,
-      items: orderSku,
-    };
-
-    return response.status(200).send(foundOrder);
+    return response.status(200).send(orderData);
   }
 }

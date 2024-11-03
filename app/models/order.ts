@@ -5,9 +5,9 @@ import type { HasMany } from '@adonisjs/lucid/types/relations';
 
 export default class Order extends BaseModel {
   @hasMany(() => OrderDetail, { foreignKey: 'orderId', localKey: 'orderId' })
-  declare order_details: HasMany<typeof OrderDetail>;
+  declare details: HasMany<typeof OrderDetail>;
 
-  @column({ isPrimary: true })
+  @column({ isPrimary: true, serializeAs: null })
   declare id: number;
 
   @column()
@@ -19,6 +19,6 @@ export default class Order extends BaseModel {
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime;
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
   declare updatedAt: DateTime;
 }

@@ -1,16 +1,17 @@
-export interface IOrderHead {
-  orderId: string;
-  userId: number;
+export enum Currency {
+  PLN = 'PLN',
+  EUR = 'EUR',
 }
 
 export interface IOrderSku {
   itemId: string;
   qty: number;
   itemPrice: number;
-  currency: string;
+  currency: Currency;
 }
 
 export interface IOrderData {
   orderId: string;
-  items: Array<IOrderSku>;
+  userId?: number;
+  details: Array<IOrderSku>;
 }
