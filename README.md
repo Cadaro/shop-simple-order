@@ -95,7 +95,7 @@ curl --location 'localhost:3333/api/auth/token' \
 ```
 
 4. Create new order - authentication token is needed
-   All you need to provide is itemId that you get in step 1 and qty. Nothing more. Price and currency are automatically fetched from `items` table.
+   All you need to provide is itemId that you get in step 1, qty, itemPrice and currency.
 
 ```
 curl --location 'localhost:3333/api/orders' \
