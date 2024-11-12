@@ -13,7 +13,6 @@ import TokenController from '#controllers/token_controller';
 import UsersController from '#controllers/users_controller';
 import router from '@adonisjs/core/services/router';
 import { middleware } from './kernel.js';
-import CartController from '#controllers/cart_controller';
 
 router
   .group(() => {
@@ -24,11 +23,6 @@ router
         .apiOnly()
         .only(['index', 'store', 'show'])
         .use(['index', 'store', 'show'], middleware.auth());
-      router
-        .resource('cart', CartController)
-        .apiOnly()
-        .only(['index', 'store', 'update', 'destroy'])
-        .use('*', middleware.auth());
     });
     router
       .group(() => {
