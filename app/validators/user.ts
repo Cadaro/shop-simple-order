@@ -1,4 +1,4 @@
-import vine from '@vinejs/vine'
+import vine from '@vinejs/vine';
 
 /**
  * Validator to validate the payload when creating
@@ -6,8 +6,9 @@ import vine from '@vinejs/vine'
  */
 export const createUserValidator = vine.compile(
   vine.object({
-    fullName: vine.string().optional(),
+    firstName: vine.string().minLength(3),
+    lastName: vine.string().maxLength(254).optional(),
     email: vine.string().email().maxLength(254).trim(),
     password: vine.string(),
   })
-)
+);

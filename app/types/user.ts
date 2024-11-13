@@ -12,11 +12,18 @@ export interface ISavedDeliveryData {
   courierPickupPointData?: Map<string, string>;
 }
 
-export interface _IUserData {
+export interface IUserData {
   userId: number;
-  createdAt: Date;
-  name: string;
-  lastName: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  firstName: string;
+  lastName?: string;
   deliveryData?: ISavedDeliveryData;
-  invoiceAddress?: string;
+  invoiceAddress?: IAddress;
+}
+
+export interface IUserDb {
+  fullName?: string;
+  email: string;
+  password: string;
 }
