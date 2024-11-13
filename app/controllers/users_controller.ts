@@ -1,23 +1,34 @@
-import User from '#models/user';
+import UserService from '#services/user_service';
 import { createUserValidator } from '#validators/user';
 import type { HttpContext } from '@adonisjs/core/http';
 
 export default class UsersController {
   async store({ request, response }: HttpContext) {
     const validatedUserData = await request.validateUsing(createUserValidator);
-    const dbSave = await User.create(validatedUserData);
+    const userService = new UserService();
+    const createdUser = await userService.createUser(validatedUserData);
 
-    if (!dbSave) {
+    if (!createdUser.userId) {
       return response.internalServerError();
     }
 
-    return response.noContent();
+    return response.ok({ userId: createdUser.userId });
   }
 
   async index({ auth, response }: HttpContext) {
     if (!auth.isAuthenticated) {
       return response.unauthorized();
     }
+
     return response.status(200).send(auth.user);
+  }
+
+  async update({ auth, params, request, response }: HttpContext) {
+    if (!auth.isAuthenticated) {
+      return response.unauthorized();
+    }
+    const { firstName, lastName } = request.only(['firstName', 'lastName']);
+    const userService = new UserService();
+    await userService.updateUser({ userId: params.id, firstName, lastName });
   }
 }
