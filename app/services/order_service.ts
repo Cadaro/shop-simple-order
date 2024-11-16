@@ -33,12 +33,12 @@ export default class OrderService {
     return { orderId, userId, details: orderedItems } as IOrderData;
   }
 
-  async fetchUserOrderDetails(orderId: string, userId: number) {
-    const orderData = await Order.findBy({ orderId, userId });
+  async fetchUserOrderDetails(orderId: string) {
+    const orderData = await Order.findBy({ orderId });
     if (!orderData) {
       return null;
     }
     await orderData.load('details');
-    return orderData.serialize() as IOrderData;
+    return orderData;
   }
 }

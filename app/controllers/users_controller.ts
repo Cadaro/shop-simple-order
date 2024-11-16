@@ -27,6 +27,11 @@ export default class UsersController {
     if (!auth.isAuthenticated) {
       return response.unauthorized();
     }
+
+    if (!auth.user!.id === params.id) {
+      return response.forbidden();
+    }
+
     const { firstName, lastName } = request.only(['firstName', 'lastName']);
     const userService = new UserService();
     await userService.updateUser({ userId: params.id, firstName, lastName });
