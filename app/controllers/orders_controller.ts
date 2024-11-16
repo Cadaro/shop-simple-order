@@ -1,9 +1,11 @@
 import { createOrderDetailValidator } from '#validators/order_detail';
-import type { HttpContext } from '@adonisjs/core/http';
+import { HttpContext } from '@adonisjs/core/http';
 import { IOrderData } from '#types/order';
 import StockService from '#services/stock_service';
 import OrderService from '#services/order_service';
 import OrderPolicy from '#policies/order_policy';
+import { IResponseError, StatusCodeEnum } from '#types/response';
+import ResponseErrorHandler from '#exceptions/response';
 
 export default class OrdersController {
   async index({ auth, response }: HttpContext) {
@@ -34,11 +36,8 @@ export default class OrdersController {
       );
 
       return response.status(200).send(orderData);
-    } catch (error) {
-      return response.badRequest({
-        error: 'Order could not be created due to errors',
-        details: error,
-      });
+    } catch (e) {
+      return new ResponseErrorHandler().handleError(response, StatusCodeEnum.BadRequest, e);
     }
   }
 
@@ -48,13 +47,12 @@ export default class OrdersController {
     }
     const orderService = new OrderService();
     const orderData = await orderService.fetchUserOrderDetails(params.id);
-
-    if (!orderData) {
-      return response.notFound();
-    }
-
-    if (await bouncer.with(OrderPolicy).denies('view', orderData)) {
+    if (await bouncer.with(OrderPolicy).denies('view', orderData!)) {
       return response.forbidden();
+    }
+    if (!orderData) {
+      const error: IResponseError = { errors: [{ message: `Order ${params.id} not found` }] };
+      return new ResponseErrorHandler().handleError(response, StatusCodeEnum.NotFound, error);
     }
 
     return response.status(200).send(orderData!.serialize() as IOrderData);

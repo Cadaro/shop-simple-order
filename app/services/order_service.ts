@@ -1,7 +1,6 @@
 import Order from '#models/order';
 import { IOrderData, IOrderSku } from '#types/order';
 import { randomUUID } from 'crypto';
-import StockService from './stock_service.js';
 import db from '@adonisjs/lucid/services/db';
 
 export default class OrderService {
@@ -11,13 +10,6 @@ export default class OrderService {
   }
 
   async createOrder(orderedItems: Array<IOrderSku>, userId: number) {
-    const stockService = new StockService();
-    const availableStock = await stockService.isStockAvailable(orderedItems);
-
-    if (!availableStock) {
-      throw new Error('Stock is not available');
-    }
-
     const orderId = randomUUID();
     await db.transaction(async (trx) => {
       const savedOrderHead = await Order.create({ orderId, userId }, { client: trx });
@@ -26,7 +18,7 @@ export default class OrderService {
         .related('details')
         .createMany(orderedItems, { client: trx });
       if (!savedOrderHead || !savedOrderSku) {
-        throw new Error('Unable to create order');
+        throw new Error('Could not create new order');
       }
     });
 

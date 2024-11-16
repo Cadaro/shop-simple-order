@@ -5,13 +5,17 @@ import db from '@adonisjs/lucid/services/db';
 export default class UserService {
   async createUser(userData: IUserDb) {
     const user = await db.transaction(async (trx) => {
+      const exists = await User.findBy({ email: userData.email }, { client: trx });
+      if (exists) {
+        throw new Error(`Email ${userData.email} already exists`);
+      }
       const createdUser = await User.create(userData, { client: trx });
       if (!createdUser) {
-        return null;
+        throw new Error(`Cannot create user account for ${userData.email}`);
       }
       return createdUser.serialize() as IUserData;
     });
-    return { userId: user?.userId };
+    return { userId: user.userId };
   }
 
   async updateUser(userData: IUserData) {

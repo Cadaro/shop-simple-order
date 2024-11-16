@@ -11,17 +11,15 @@ export default class StockService {
     for (const item of itemList) {
       const stockItem = stock.find((item) => item.itemId === item.itemId);
       if (!stockItem || stockItem.availableQty < item.qty) {
-        // Not enough stock
         return false;
       }
     }
-    //Available stock to order
     return true;
   }
 
   async fetchSingleItem(itemId: string) {
     const item = await Item.findBy({ itemId });
-    return item ? (item.serialize() as IItem) : null;
+    return item;
   }
 
   async fetchAvailableStock() {
@@ -39,9 +37,6 @@ export default class StockService {
         const stockItem = await Item.findBy({ itemId: item.itemId }, { client: trx });
         if (!stockItem) {
           throw new Error(`Item ${item.itemId} not found`);
-        }
-        if (stockItem.availableQty < item.qty) {
-          throw new Error(`Stock is not available for item ${item.itemId}`);
         }
         stockItem.availableQty -= item.qty;
         stockItem.useTransaction(trx);
