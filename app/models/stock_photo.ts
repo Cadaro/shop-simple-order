@@ -1,30 +1,18 @@
 import { DateTime } from 'luxon';
 import { BaseModel, column } from '@adonisjs/lucid/orm';
 
-export default class Item extends BaseModel {
+export default class StockPhoto extends BaseModel {
   @column({ isPrimary: true, serializeAs: null })
   declare id: number;
 
-  @column()
+  @column({ serializeAs: null })
   declare itemId: string;
 
   @column()
-  declare itemDescription: string;
-
-  @column()
-  declare price: number;
-
-  @column()
-  declare priceCurrency: string;
+  declare url: string;
 
   @column()
   declare name: string;
-
-  @column()
-  declare size: string;
-
-  @column()
-  declare availableQty: number;
 
   @column.dateTime({ autoCreate: true, serializeAs: null })
   declare createdAt: DateTime;
