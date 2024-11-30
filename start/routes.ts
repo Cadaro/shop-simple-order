@@ -7,17 +7,21 @@
 |
 */
 
-import ItemsController from '#controllers/items_controller';
+import { middleware } from './kernel.js';
+import router from '@adonisjs/core/services/router';
 import OrdersController from '#controllers/orders_controller';
 import TokenController from '#controllers/token_controller';
 import UsersController from '#controllers/users_controller';
-import router from '@adonisjs/core/services/router';
-import { middleware } from './kernel.js';
+import StocksController from '#controllers/stocks_controller';
 
 router
   .group(() => {
     router.group(() => {
-      router.resource('items', ItemsController).apiOnly().only(['index', 'show']);
+      router
+        .resource('stocks', StocksController)
+        .apiOnly()
+        .only(['index', 'show', 'store'])
+        .use(['store'], middleware.auth());
       router
         .resource('orders', OrdersController)
         .apiOnly()
