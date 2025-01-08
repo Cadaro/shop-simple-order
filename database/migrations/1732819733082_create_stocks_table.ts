@@ -5,8 +5,8 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('id');
-      table.string('item_id').notNullable().unique();
+      table.bigIncrements('id').unsigned().notNullable().primary();
+      table.string('item_id').notNullable().unique().index();
       table.string('item_description').notNullable();
       table.float('price').notNullable();
       table.string('price_currency').notNullable();

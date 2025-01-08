@@ -5,13 +5,14 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('id');
+      table.bigIncrements('id').unsigned().notNullable().primary();
       table
         .string('item_id')
         .notNullable()
         .references('item_id')
         .inTable('stocks')
-        .onDelete('CASCADE');
+        .onDelete('CASCADE')
+        .index();
       table.string('url').notNullable();
       table.string('name').nullable();
       table.timestamp('created_at');
