@@ -1,6 +1,7 @@
 import ResponseErrorHandler from '#exceptions/response';
 import UserService from '#services/user_service';
 import { StatusCodeEnum } from '#types/response';
+import { IUserData } from '#types/user';
 import { createUserValidator } from '#validators/user';
 import type { HttpContext } from '@adonisjs/core/http';
 
@@ -21,7 +22,18 @@ export default class UsersController {
       return response.unauthorized();
     }
 
-    return response.status(200).send(auth.user);
+    const userData: IUserData = {
+      userId: auth.user!.id,
+      firstName: '',
+      lastName: '',
+    };
+    if (auth.user!.fullName) {
+      const userName = auth.user!.fullName!.split(' ');
+      userData.firstName = userName[0];
+      userData.lastName = userName[1];
+    }
+
+    return response.status(200).send(userData);
   }
 
   async update({ auth, params, request, response }: HttpContext) {
@@ -29,13 +41,18 @@ export default class UsersController {
       return response.unauthorized();
     }
 
-    if (!auth.user!.id !== params.id) {
+    if (auth.user!.id !== parseInt(params.id)) {
       return response.forbidden();
     }
+
     try {
       const { firstName, lastName } = request.only(['firstName', 'lastName']);
+      if (!firstName && !lastName) {
+        return response.noContent();
+      }
       const userService = new UserService();
       await userService.updateUser({ userId: params.id, firstName, lastName });
+      return response.noContent();
     } catch (e) {
       return new ResponseErrorHandler().handleError(response, StatusCodeEnum.BadRequest, e);
     }

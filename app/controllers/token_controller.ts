@@ -1,4 +1,5 @@
 import User from '#models/user';
+import { IToken, TokenTypeEnum } from '#types/token';
 import { createAuthValidator } from '#validators/auth';
 import stringHelpers from '@adonisjs/core/helpers/string';
 import type { HttpContext } from '@adonisjs/core/http';
@@ -21,12 +22,16 @@ export default class TokenController {
       await User.accessTokens.delete(user, availableTokens[0].identifier);
     }
 
-    const token = await User.accessTokens.create(user, ['*'], { expiresIn: '24h' });
+    const userAccessToken = await User.accessTokens.create(user, ['*'], { expiresIn: '24h' });
 
-    return response.status(200).send({
-      type: 'bearer',
-      token: token.value!.release(),
-      expiresAt: new Date(token.expiresAt!.getTime() + stringHelpers.seconds.parse('24h')),
-    });
+    const token: IToken = {
+      type: TokenTypeEnum.BEARER,
+      token: userAccessToken.value!.release(),
+      expiresAt: new Date(
+        userAccessToken.expiresAt!.getTime() + stringHelpers.seconds.parse('24h')
+      ),
+    };
+
+    return response.status(200).send(token);
   }
 }

@@ -5,6 +5,7 @@ import app from '@adonisjs/core/services/app';
 import type { Config } from '@japa/runner/types';
 import { pluginAdonisJS } from '@japa/plugin-adonisjs';
 import testUtils from '@adonisjs/core/services/test_utils';
+import { authApiClient } from '@adonisjs/auth/plugins/api_client';
 
 /**
  * This file is imported by the "bin/test.ts" entrypoint file
@@ -18,6 +19,7 @@ export const plugins: Config['plugins'] = [
   assert(),
   apiClient('http://localhost:3333'),
   pluginAdonisJS(app),
+  authApiClient(app),
   expectTypeOf(),
 ];
 
