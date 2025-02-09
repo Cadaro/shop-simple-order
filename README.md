@@ -33,7 +33,7 @@ Next run
 node ace db:seed
 ```
 
-to seed `items` table with example items.
+to seed `stocks` table with example items.
 
 ## Launch development mode
 
@@ -71,7 +71,7 @@ to list all available routes.
 1. List all items in online-shop
 
 ```
-curl --location 'localhost:3333/api/items' \
+curl --location 'localhost:3333/api/stocks' \
 ```
 
 2. Create user account
