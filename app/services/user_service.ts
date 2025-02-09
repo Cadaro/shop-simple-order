@@ -24,7 +24,8 @@ export default class UserService {
       if (!user) {
         throw new Error(`User ${userData.userId} not found`);
       }
-      user.fullName = `${userData.firstName} ${userData?.lastName ?? ''}`.trim();
+      user.firstName = userData.firstName;
+      user.lastName = userData.lastName;
       user.useTransaction(trx);
       await user.save();
     });

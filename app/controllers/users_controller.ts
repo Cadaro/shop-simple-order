@@ -24,14 +24,10 @@ export default class UsersController {
 
     const userData: IUserData = {
       userId: auth.user!.id,
-      firstName: '',
-      lastName: '',
+      email: auth.user!.email,
+      firstName: auth.user?.firstName ?? null,
+      lastName: auth.user?.lastName ?? null,
     };
-    if (auth.user!.fullName) {
-      const userName = auth.user!.fullName!.split(' ');
-      userData.firstName = userName[0];
-      userData.lastName = userName[1];
-    }
 
     return response.status(200).send(userData);
   }

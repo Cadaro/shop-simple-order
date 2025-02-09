@@ -14,16 +14,18 @@ export interface ISavedDeliveryData {
 
 export interface IUserData {
   userId: number;
+  email?: string;
   createdAt?: Date;
   updatedAt?: Date;
-  firstName: string;
-  lastName?: string;
+  firstName: string | null;
+  lastName: string | null;
   deliveryData?: ISavedDeliveryData;
   invoiceAddress?: IAddress;
 }
 
 export interface IUserDb {
-  fullName?: string;
+  firstName?: string | null;
+  lastName?: string | null;
   email: string;
   password: string;
 }
