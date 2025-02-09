@@ -29,9 +29,9 @@ export default class OrdersController {
     try {
       const stockService = new StockService();
       const orderService = new OrderService();
-      await stockService.updateStock(orderedItems.details);
+      await stockService.updateStock(orderedItems.items);
       const orderData: IOrderData = await orderService.createOrder(
-        orderedItems.details,
+        orderedItems.items,
         auth.user!.id
       );
 

@@ -3,10 +3,10 @@ import vine, { SimpleMessagesProvider } from '@vinejs/vine';
 
 export const createOrderDetailValidator = vine.compile(
   vine.object({
-    details: vine
+    items: vine
       .array(
         vine.object({
-          itemId: vine.string().uuid({ version: [4] }),
+          itemId: vine.string(),
           qty: vine.number({ strict: true }).positive().withoutDecimals(),
           itemPrice: vine.number({ strict: true }).positive().decimal(2),
           currency: vine.enum(Currency),

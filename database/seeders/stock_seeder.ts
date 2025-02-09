@@ -3,7 +3,7 @@ import { BaseSeeder } from '@adonisjs/lucid/seeders';
 import { randomUUID } from 'crypto';
 
 export default class extends BaseSeeder {
-  static environment: string[] = ['test'];
+  static environment: string[] = ['test', 'development'];
   async run() {
     await new Stock()
       .fill({

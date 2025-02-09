@@ -45,16 +45,18 @@ npm run dev
 
 ## List of available routes
 
-| Method | Route           | Auth required?    | Purpose                          |
-| ------ | --------------- | ----------------- | -------------------------------- |
-| GET    | /api/items      | No                | list all items to buy            |
-| GET    | /api/items/:id  | No                | view item details                |
-| GET    | /api/orders     | Yes, Bearer token | list all orders assigned to user |
-| POST   | /api/orders     | Yes, Bearer token | create order                     |
-| GET    | /api/orders/:id | Yes, Bearer token | view created order               |
-| GET    | /api/auth/users | Yes, Bearer token | view user data                   |
-| POST   | /api/auth/users | No                | create user account              |
-| POST   | /api/auth/token | No                | create user token                |
+| Method | Route               | Auth Required | Description               |
+| ------ | ------------------- | ------------- | ------------------------- |
+| GET    | /api/stocks         | No            | View available stock      |
+| POST   | /api/stocks         | Yes           | Create new stock item     |
+| GET    | /api/stocks/:id     | No            | View one stock item       |
+| GET    | /api/orders         | Yes           | View all user orders      |
+| POST   | /api/orders         | Yes           | Create new order          |
+| GET    | /api/orders/:id     | Yes           | View one user order       |
+| GET    | /api/auth/users     | Yes           | View user data            |
+| PATCH  | /api/auth/users/:id | Yes           | Update user data          |
+| POST   | /api/auth/users     | No            | Create new user           |
+| POST   | /api/auth/token     | No            | Create new token for user |
 
 You can also run
 
@@ -102,7 +104,7 @@ curl --location 'localhost:3333/api/orders' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {{token}}' \
 --data '{
-    "details": [
+    "items": [
         {
             "itemId": "bf9fffb6-9708-46bc-a54a-2162acbc89fa",
             "qty": 2,
