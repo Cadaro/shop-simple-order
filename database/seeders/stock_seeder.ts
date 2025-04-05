@@ -18,7 +18,7 @@ export default class extends BaseSeeder {
       .createMany([{ url: '/path/to/photo.jpg', name: 'photo' }]);
     await new Stock()
       .fill({
-        itemId: randomUUID(),
+        itemId: 'test-stock-item',
         itemDescription: 'Blue t-shirt in M size. Unisex.',
         name: 'blue t-shirt',
         price: 7.99,

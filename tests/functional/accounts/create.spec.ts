@@ -9,7 +9,7 @@ test.group('Users create', () => {
       .json({ email: 'test@example.com', password: 'Test123' });
     response.assertStatus(200);
     const user: IUserData = response.body();
-    assert.properties(user, { userId: 123 });
+    assert.properties(user, ['userId']);
   });
   test('get user token', async ({ client, assert, expectTypeOf }) => {
     const response = await client
