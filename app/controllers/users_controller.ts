@@ -23,7 +23,7 @@ export default class UsersController {
     }
 
     const userData: IUserData = {
-      userId: auth.user!.id,
+      userId: auth.user!.uuid,
       email: auth.user!.email,
       firstName: auth.user?.firstName ?? null,
       lastName: auth.user?.lastName ?? null,
@@ -37,7 +37,7 @@ export default class UsersController {
       return response.unauthorized();
     }
 
-    if (auth.user!.id !== parseInt(params.id)) {
+    if (auth.user!.uuid !== String(params.id)) {
       return response.forbidden();
     }
 

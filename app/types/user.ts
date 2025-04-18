@@ -13,7 +13,7 @@ export interface ISavedDeliveryData {
 }
 
 export interface IUserData {
-  userId: number;
+  userId: string;
   email?: string;
   createdAt?: Date;
   updatedAt?: Date;

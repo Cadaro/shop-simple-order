@@ -15,7 +15,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @hasMany(() => Order, { foreignKey: 'userId' })
   declare orders: HasMany<typeof Order>;
 
-  @column({ isPrimary: true, serializeAs: 'userId' })
+  @column({ isPrimary: true, serializeAs: null })
   declare id: number;
 
   @column()
@@ -35,6 +35,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null;
+
+  @column({ serializeAs: 'userId' })
+  declare uuid: string;
 
   static accessTokens = DbAccessTokensProvider.forModel(User, {
     expiresIn: '24h',
