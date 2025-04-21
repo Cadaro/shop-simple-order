@@ -19,7 +19,7 @@ test.group('Orders create', () => {
     const orderData: IOrderData = response.body();
 
     response.assertStatus(200);
-    assert.onlyProperties(orderData, ['orderId', 'userId', 'details']);
+    assert.onlyProperties(orderData, ['orderId', 'details']);
   });
 
   test('create order without available stock', async ({ client }) => {

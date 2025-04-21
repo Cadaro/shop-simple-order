@@ -14,7 +14,7 @@ export default class OrdersController {
     }
 
     const orderService = new OrderService();
-    const orderList = await orderService.fetchUserOrderList(auth.user!.id);
+    const orderList: Array<IOrderData> = await orderService.fetchUserOrderList(auth.user!.id);
 
     return response.status(200).send(orderList);
   }
@@ -55,6 +55,12 @@ export default class OrdersController {
       return new ResponseErrorHandler().handleError(response, StatusCodeEnum.NotFound, error);
     }
 
-    return response.status(200).send(orderData!.serialize() as IOrderData);
+    const order: IOrderData = {
+      orderId: orderData.orderId,
+      details: orderData.details,
+      createdAt: orderData.createdAt,
+    };
+
+    return response.status(200).send(order);
   }
 }

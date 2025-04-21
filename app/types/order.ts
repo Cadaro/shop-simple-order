@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 export enum Currency {
   PLN = 'PLN',
   EUR = 'EUR',
@@ -12,6 +14,6 @@ export interface IOrderSku {
 
 export interface IOrderData {
   orderId: string;
-  userId?: number;
+  createdAt?: DateTime;
   details: Array<IOrderSku>;
 }

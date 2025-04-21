@@ -3,10 +3,10 @@ import { BaseModel, column } from '@adonisjs/lucid/orm';
 import { Currency } from '#types/order';
 
 export default class OrderDetail extends BaseModel {
-  @column({ isPrimary: true })
+  @column({ isPrimary: true, serializeAs: null })
   declare id: number;
 
-  @column()
+  @column({ serializeAs: null })
   declare orderId: string;
 
   @column()

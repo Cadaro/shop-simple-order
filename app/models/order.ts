@@ -13,7 +13,7 @@ export default class Order extends BaseModel {
   @column()
   declare orderId: string;
 
-  @column()
+  @column({ serializeAs: null })
   declare userId: number;
 
   @column.dateTime({ autoCreate: true })

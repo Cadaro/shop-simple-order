@@ -22,7 +22,8 @@ export default class OrderService {
       }
     });
 
-    return { orderId, userId, details: orderedItems } as IOrderData;
+    const order: IOrderData = { orderId, details: orderedItems };
+    return order;
   }
 
   async fetchUserOrderDetails(orderId: string) {
