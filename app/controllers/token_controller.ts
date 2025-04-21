@@ -32,6 +32,6 @@ export default class TokenController {
       ),
     };
 
-    return response.status(200).send(token);
+    return response.ok(token);
   }
 }

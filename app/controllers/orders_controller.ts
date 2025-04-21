@@ -3,7 +3,6 @@ import { HttpContext } from '@adonisjs/core/http';
 import { IOrderData } from '#types/order';
 import StockService from '#services/stock_service';
 import OrderService from '#services/order_service';
-import OrderPolicy from '#policies/order_policy';
 import { IResponseError, StatusCodeEnum } from '#types/response';
 import ResponseErrorHandler from '#exceptions/response';
 
@@ -16,7 +15,7 @@ export default class OrdersController {
     const orderService = new OrderService();
     const orderList: Array<IOrderData> = await orderService.fetchUserOrderList(auth.user!.id);
 
-    return response.status(200).send(orderList);
+    return response.ok(orderList);
   }
 
   async store({ auth, request, response }: HttpContext) {
@@ -35,7 +34,7 @@ export default class OrdersController {
         auth.user!.id
       );
 
-      return response.status(200).send(orderData);
+      return response.ok(orderData);
     } catch (e) {
       return new ResponseErrorHandler().handleError(response, StatusCodeEnum.BadRequest, e);
     }
@@ -47,7 +46,7 @@ export default class OrdersController {
     }
     const orderService = new OrderService();
     const orderData = await orderService.fetchUserOrderDetails(params.id);
-    if (await bouncer.with(OrderPolicy).denies('view', orderData!)) {
+    if (await bouncer.with('OrderPolicy').denies('view', orderData!)) {
       return response.forbidden();
     }
     if (!orderData) {
@@ -61,6 +60,6 @@ export default class OrdersController {
       createdAt: orderData.createdAt,
     };
 
-    return response.status(200).send(order);
+    return response.ok(order);
   }
 }

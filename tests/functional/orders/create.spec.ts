@@ -38,4 +38,15 @@ test.group('Orders create', () => {
 
     response.assertStatus(400);
   });
+
+  test('create order without auth token', async ({ client }) => {
+    const response = await client
+      .post('/api/orders')
+      .header('content-type', 'application/json')
+      .json({
+        items: [{ itemId: 'test-stock-item', qty: 1, itemPrice: 9.99, currency: Currency.EUR }],
+      });
+
+    response.assertStatus(401);
+  });
 });

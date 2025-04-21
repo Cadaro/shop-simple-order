@@ -29,15 +29,15 @@ export default class UsersController {
       lastName: auth.user?.lastName ?? null,
     };
 
-    return response.status(200).send(userData);
+    return response.ok(userData);
   }
 
-  async update({ auth, params, request, response }: HttpContext) {
+  async update({ bouncer, auth, params, request, response }: HttpContext) {
     if (!auth.isAuthenticated) {
       return response.unauthorized();
     }
 
-    if (auth.user!.uuid !== String(params.id)) {
+    if (await bouncer.with('UserPolicy').denies('edit', auth.user!.uuid)) {
       return response.forbidden();
     }
 
