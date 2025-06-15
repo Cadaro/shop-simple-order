@@ -32,9 +32,10 @@ router
       .group(() => {
         router
           .resource('users', UsersController)
-          .only(['index', 'update'])
+          .only(['index'])
           .apiOnly()
-          .use(['index', 'update'], middleware.auth());
+          .use('index', middleware.auth());
+        router.patch('users', [UsersController, 'update']).use(middleware.auth());
         router.resource('users', UsersController).apiOnly().only(['store']);
         router.resource('token', TokenController).apiOnly().only(['store']);
       })

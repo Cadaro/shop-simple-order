@@ -2,7 +2,7 @@ import ResponseErrorHandler from '#exceptions/response';
 import UserService from '#services/user_service';
 import { StatusCodeEnum } from '#types/response';
 import { IUserData } from '#types/user';
-import { createUserValidator } from '#validators/user';
+import { createUserValidator, updateUserValidator } from '#validators/user';
 import type { HttpContext } from '@adonisjs/core/http';
 
 export default class UsersController {
@@ -22,32 +22,30 @@ export default class UsersController {
       return response.unauthorized();
     }
 
-    const userData: IUserData = {
-      userId: auth.user!.uuid,
-      email: auth.user!.email,
-      firstName: auth.user?.firstName ?? null,
-      lastName: auth.user?.lastName ?? null,
-    };
+    const userService = new UserService();
+
+    const userData: IUserData = await userService.fetchUserData(auth.user!.uuid);
 
     return response.ok(userData);
   }
 
-  async update({ bouncer, auth, params, request, response }: HttpContext) {
+  async update({ auth, request, response }: HttpContext) {
     if (!auth.isAuthenticated) {
       return response.unauthorized();
     }
 
-    if (await bouncer.with('UserPolicy').denies('edit', auth.user!.uuid)) {
-      return response.forbidden();
-    }
-
     try {
-      const { firstName, lastName } = request.only(['firstName', 'lastName']);
-      if (!firstName && !lastName) {
+      const validatedUserData = await request.validateUsing(updateUserValidator);
+      if (
+        !validatedUserData.firstName &&
+        !validatedUserData.lastName &&
+        !validatedUserData.invoiceAddress
+      ) {
         return response.noContent();
       }
       const userService = new UserService();
-      await userService.updateUser({ userId: params.id, firstName, lastName });
+      //todo: usuwanie wartości pola, które jest nullowe
+      await userService.updateUser({ userId: auth.user!.uuid, ...validatedUserData });
       return response.noContent();
     } catch (e) {
       return new ResponseErrorHandler().handleError(response, StatusCodeEnum.BadRequest, e);

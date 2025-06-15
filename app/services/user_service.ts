@@ -29,10 +29,21 @@ export default class UserService {
       if (!user) {
         throw new Error(`User ${userData.userId} not found`);
       }
-      user.firstName = userData.firstName;
-      user.lastName = userData.lastName;
-      user.useTransaction(trx);
-      await user.save();
+      await user.merge({ firstName: userData.firstName, lastName: userData.lastName }).save();
+      if (userData.invoiceAddress) {
+        await user
+          .related('user_invoice_addresses')
+          .updateOrCreate({ userId: userData.userId }, { ...userData.invoiceAddress });
+      }
     });
+  }
+
+  async fetchUserData(uuid: string) {
+    const userData = await User.findBy({ uuid });
+    if (!userData) {
+      throw new Error(`User ${uuid} not found`);
+    }
+    await userData.load('user_invoice_addresses');
+    return userData.serialize() as IUserData;
   }
 }

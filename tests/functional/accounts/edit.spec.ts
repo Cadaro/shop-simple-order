@@ -1,4 +1,6 @@
+import { CountryCode } from '#types/countryCode';
 import { IToken } from '#types/token';
+import { IAddress } from '#types/user';
 import { test } from '@japa/runner';
 
 test.group('Edit user', () => {
@@ -8,14 +10,10 @@ test.group('Edit user', () => {
       .json({ email: 'test@example.com', password: 'Test123' });
     const authToken: IToken = responseAuth.body();
 
-    let responseUser = await client.get('/api/auth/users').bearerToken(authToken.token);
-
-    let user = responseUser.body();
-
     const userDataToEdit = { firstName: 'testName', lastName: 'testLastName' };
 
     const responseEdit = await client
-      .patch(`/api/auth/users/${user.userId}`)
+      .patch(`/api/auth/users/`)
       .bearerToken(authToken.token)
       .header('content-type', 'application/json')
       .json(userDataToEdit);
@@ -27,14 +25,35 @@ test.group('Edit user', () => {
       .json({ email: 'test@example.com', password: 'Test123' });
     const authToken: IToken = responseAuth.body();
 
-    let responseUser = await client.get('/api/auth/users').bearerToken(authToken.token);
-
-    let user = responseUser.body();
-
     const responseEdit = await client
-      .patch(`/api/auth/users/${user.userId}`)
+      .patch(`/api/auth/users/`)
       .bearerToken(authToken.token)
       .header('content-type', 'application/json');
+    responseEdit.assertStatus(204);
+  });
+
+  test('edit user data with invoice address', async ({ client }) => {
+    const responseAuth = await client
+      .post('/api/auth/token')
+      .json({ email: 'test@example.com', password: 'Test123' });
+    const authToken: IToken = responseAuth.body();
+
+    const invoiceAddress: IAddress = {
+      city: 'Test city',
+      countryCode: CountryCode.PL,
+      postalCode: '32-080',
+      streetName: 'Akacjowa',
+      streetNumber: '43A',
+    };
+
+    const userDataToEdit = { firstName: 'testName', lastName: 'testLastName', invoiceAddress };
+
+    const responseEdit = await client
+      .patch(`/api/auth/users/`)
+      .bearerToken(authToken.token)
+      .header('content-type', 'application/json')
+      .json(userDataToEdit);
+
     responseEdit.assertStatus(204);
   });
 });
