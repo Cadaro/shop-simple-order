@@ -41,7 +41,7 @@ export default class UsersController {
         !validatedUserData.lastName &&
         !validatedUserData.invoiceAddress
       ) {
-        return response.noContent();
+        return response.badRequest();
       }
       const userService = new UserService();
       //todo: usuwanie wartości pola, które jest nullowe

@@ -29,7 +29,7 @@ test.group('Edit user', () => {
       .patch(`/api/auth/users/`)
       .bearerToken(authToken.token)
       .header('content-type', 'application/json');
-    responseEdit.assertStatus(204);
+    responseEdit.assertStatus(400);
   });
 
   test('edit user data with invoice address', async ({ client }) => {
