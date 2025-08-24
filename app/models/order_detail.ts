@@ -13,6 +13,9 @@ export default class OrderDetail extends BaseModel {
   declare itemId: string;
 
   @column()
+  declare itemName: string;
+
+  @column()
   declare qty: number;
 
   @column()
@@ -20,6 +23,12 @@ export default class OrderDetail extends BaseModel {
 
   @column()
   declare currency: Currency;
+
+  @column()
+  declare vatAmount: number;
+
+  @column()
+  declare vatRate: number;
 
   @column.dateTime({ autoCreate: true, serializeAs: null })
   declare createdAt: DateTime;

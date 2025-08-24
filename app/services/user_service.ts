@@ -30,11 +30,11 @@ export default class UserService {
         throw new Error(`User ${userData.userId} not found`);
       }
       await user.merge({ firstName: userData.firstName, lastName: userData.lastName }).save();
-      if (userData.invoiceAddress) {
-        await user
-          .related('user_invoice_addresses')
-          .updateOrCreate({ userId: userData.userId }, { ...userData.invoiceAddress });
-      }
+      // if (userData.invoiceAddress) {
+      //   await user
+      //     .related('invoice_customers')
+      //     .updateOrCreate({ userId: userData.userId }, { ...userData.invoiceAddress });
+      // }
     });
   }
 
@@ -43,7 +43,7 @@ export default class UserService {
     if (!userData) {
       throw new Error(`User ${uuid} not found`);
     }
-    await userData.load('user_invoice_addresses');
+    await userData.load('invoice_customers');
     return userData.serialize() as IUserData;
   }
 }

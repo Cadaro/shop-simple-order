@@ -1,10 +1,10 @@
 import Stock from '#models/stock';
-import { IItemWithQty, IStock } from '#types/stock';
+import { ItemWithQty, StockItem } from '#types/stock';
 import db from '@adonisjs/lucid/services/db';
 import { randomUUID } from 'crypto';
 
 export default class StockService {
-  async isStockAvailable(stocks: Array<IItemWithQty>) {
+  async isStockAvailable(stocks: Array<ItemWithQty>) {
     const foundStock = await Stock.query().whereIn(
       'item_id',
       stocks.map((s) => s.itemId)
@@ -26,11 +26,11 @@ export default class StockService {
 
   async fetchAvailableStock() {
     const stocks = await Stock.query().where('available_qty', '>', 0).preload('photos');
-    const serializedStock = stocks.map((stock) => stock.serialize()) as Array<IStock>;
+    const serializedStock = stocks.map((stock) => stock.serialize()) as Array<StockItem>;
     return serializedStock;
   }
 
-  async updateStock(items: Array<IItemWithQty>) {
+  async updateStock(items: Array<ItemWithQty>) {
     const availableStock = await this.isStockAvailable(items);
     if (!availableStock) {
       throw new Error('Stock is not available');
@@ -48,7 +48,7 @@ export default class StockService {
     });
   }
 
-  async createSingleItemStock(stock: IStock) {
+  async createSingleItemStock(stock: StockItem) {
     stock.itemId = stock.itemId ?? randomUUID();
     const exists = await Stock.findBy({ itemId: stock.itemId });
     if (exists) {

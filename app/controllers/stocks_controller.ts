@@ -1,7 +1,7 @@
 import ResponseErrorHandler from '#exceptions/response';
 import StockService from '#services/stock_service';
 import { IResponseError, StatusCodeEnum } from '#types/response';
-import { IStock } from '#types/stock';
+import type { StockItem } from '#types/stock';
 import { createStockValidator } from '#validators/stock';
 import type { HttpContext } from '@adonisjs/core/http';
 
@@ -21,7 +21,7 @@ export default class StocksController {
       const error: IResponseError = { errors: [{ message: `Stock item ${params.id} not found` }] };
       return new ResponseErrorHandler().handleError(response, StatusCodeEnum.NotFound, error);
     }
-    return response.ok(singleStockItem.serialize() as IStock);
+    return response.ok(singleStockItem.serialize() as StockItem);
   }
 
   async store({ auth, request, response }: HttpContext) {

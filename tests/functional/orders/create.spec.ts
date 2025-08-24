@@ -1,8 +1,30 @@
-import { Currency, IOrderData } from '#types/order';
+import { Currency, OrderData } from '#types/order';
 import { IToken } from '#types/token';
 import { test } from '@japa/runner';
 
 test.group('Orders create', () => {
+  const availableStock = [
+    {
+      itemId: 'test-stock-item',
+      itemName: 'blue t-shirt',
+      itemPrice: 7.99,
+      currency: Currency.EUR,
+      qty: 1,
+      vatAmount: 1.43,
+      vatRate: 0.19,
+    },
+  ];
+  const unavailableStock = [
+    {
+      itemId: 'test-stock-item',
+      itemName: 'blue t-shirt',
+      itemPrice: 7.99,
+      currency: Currency.EUR,
+      qty: 99,
+      vatAmount: 1.43,
+      vatRate: 0.19,
+    },
+  ];
   test('create order with available stock', async ({ client, assert }) => {
     const responseAuth = await client
       .post('/api/auth/token')
@@ -14,9 +36,9 @@ test.group('Orders create', () => {
       .bearerToken(authToken.token)
       .header('content-type', 'application/json')
       .json({
-        items: [{ itemId: 'test-stock-item', qty: 1, itemPrice: 9.99, currency: Currency.EUR }],
+        items: availableStock,
       });
-    const orderData: IOrderData = response.body();
+    const orderData: OrderData = response.body();
 
     response.assertStatus(200);
     assert.onlyProperties(orderData, ['orderId', 'details']);
@@ -33,7 +55,7 @@ test.group('Orders create', () => {
       .bearerToken(authToken.token)
       .header('content-type', 'application/json')
       .json({
-        items: [{ itemId: 'test-stock-item', qty: 999, itemPrice: 9.99, currency: Currency.EUR }],
+        items: unavailableStock,
       });
 
     response.assertStatus(400);

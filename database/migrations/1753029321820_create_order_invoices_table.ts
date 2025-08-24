@@ -5,14 +5,13 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.index(['invoice_id', 'user_id'], 'invoice_user_idx');
+      table.index(['invoice_id', 'order_id'], 'invoice_order_idx');
       table.bigIncrements('id').unsigned().notNullable().primary();
       table
         .string('invoice_id')
         .notNullable()
         .unique()
         .comment('invoice unique number related to order');
-      table.string('user_id').notNullable().comment('user id');
       table.string('order_id').notNullable().comment('order number related to invoice');
       table.string('first_name').notNullable().comment("customer's first name");
       table.string('last_name').notNullable().comment("customer's last name");

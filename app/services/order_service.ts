@@ -1,15 +1,15 @@
 import Order from '#models/order';
-import { IOrderData, IOrderSku } from '#types/order';
+import { OrderData, OrderSku } from '#types/order';
 import { randomUUID } from 'crypto';
 import db from '@adonisjs/lucid/services/db';
 
 export default class OrderService {
   async fetchUserOrderList(userId: number) {
-    const userOrderList: Array<IOrderData> = await Order.findManyBy({ userId });
+    const userOrderList: Array<OrderData> = await Order.findManyBy({ userId });
     return userOrderList;
   }
 
-  async createOrder(orderedItems: Array<IOrderSku>, userId: number) {
+  async createOrder(orderedItems: Array<OrderSku>, userId: number) {
     const orderId = randomUUID();
     await db.transaction(async (trx) => {
       const savedOrderHead = await Order.create({ orderId, userId }, { client: trx });
@@ -22,11 +22,11 @@ export default class OrderService {
       }
     });
 
-    const order: IOrderData = { orderId, details: orderedItems };
+    const order: OrderData = { orderId, details: orderedItems };
     return order;
   }
 
-  async fetchUserOrderDetails(orderId: string) {
+  async fetchUserSingleOrder(orderId: string) {
     const orderData = await Order.findBy({ orderId });
     if (!orderData) {
       return null;

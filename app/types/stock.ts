@@ -1,19 +1,23 @@
-export interface IStockPhoto {
+import { Currency } from './order.js';
+
+type StockPhoto = {
   url: string;
   name?: string;
-}
-export interface IStock {
+};
+export type StockItem = {
   itemId?: string;
   price: number;
-  priceCurrency: string;
+  priceCurrency: Currency;
+  vatAmount: number;
+  vatRate: number;
   name: string;
   itemDescription: string;
   size?: string;
   availableQty: number;
-  photos: Array<IStockPhoto>;
-}
+  photos: Array<StockPhoto>;
+};
 
-export interface IItemWithQty {
+export type ItemWithQty = {
   itemId: string;
   qty: number;
-}
+};

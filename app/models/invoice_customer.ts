@@ -1,12 +1,18 @@
 import { DateTime } from 'luxon';
 import { BaseModel, column } from '@adonisjs/lucid/orm';
 
-export default class UserInvoiceAddress extends BaseModel {
+export default class InvoiceCustomers extends BaseModel {
   @column({ isPrimary: true, serializeAs: null })
   declare id: number;
 
   @column({ serializeAs: null })
   declare userId: string;
+
+  @column()
+  declare firstName: string;
+
+  @column()
+  declare lastName: string;
 
   @column()
   declare streetName: string;

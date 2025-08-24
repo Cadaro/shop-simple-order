@@ -5,15 +5,18 @@ export enum Currency {
   EUR = 'EUR',
 }
 
-export interface IOrderSku {
+export type OrderSku = {
   itemId: string;
+  itemName: string;
   qty: number;
   itemPrice: number;
   currency: Currency;
-}
+  vatAmount: number;
+  vatRate: number;
+};
 
-export interface IOrderData {
+export type OrderData = {
   orderId: string;
   createdAt?: DateTime;
-  details: Array<IOrderSku>;
-}
+  details: Array<OrderSku>;
+};

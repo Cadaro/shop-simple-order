@@ -15,9 +15,6 @@ export default class OrderInvoice extends BaseModel {
   declare invoiceId: string;
 
   @column()
-  declare userId: string;
-
-  @column()
   declare orderId: string;
 
   @column()

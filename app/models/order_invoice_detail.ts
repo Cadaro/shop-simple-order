@@ -25,7 +25,7 @@ export default class OrderInvoiceDetail extends BaseModel {
   declare priceCurrency: Currency;
 
   @column()
-  declare vatAmout: number;
+  declare vatAmount: number;
 
   @column()
   declare vatRate: number;

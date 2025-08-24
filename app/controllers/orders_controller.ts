@@ -1,6 +1,6 @@
 import { createOrderDetailValidator } from '#validators/order_detail';
 import { HttpContext } from '@adonisjs/core/http';
-import { IOrderData } from '#types/order';
+import { OrderData } from '#types/order';
 import StockService from '#services/stock_service';
 import OrderService from '#services/order_service';
 import { IResponseError, StatusCodeEnum } from '#types/response';
@@ -13,7 +13,7 @@ export default class OrdersController {
     }
 
     const orderService = new OrderService();
-    const orderList: Array<IOrderData> = await orderService.fetchUserOrderList(auth.user!.id);
+    const orderList: Array<OrderData> = await orderService.fetchUserOrderList(auth.user!.id);
 
     return response.ok(orderList);
   }
@@ -29,7 +29,7 @@ export default class OrdersController {
       const stockService = new StockService();
       const orderService = new OrderService();
       await stockService.updateStock(orderedItems.items);
-      const orderData: IOrderData = await orderService.createOrder(
+      const orderData: OrderData = await orderService.createOrder(
         orderedItems.items,
         auth.user!.id
       );
@@ -45,7 +45,7 @@ export default class OrdersController {
       return response.unauthorized();
     }
     const orderService = new OrderService();
-    const orderData = await orderService.fetchUserOrderDetails(params.id);
+    const orderData = await orderService.fetchUserSingleOrder(params.id);
     if (await bouncer.with('OrderPolicy').denies('view', orderData!)) {
       return response.forbidden();
     }
@@ -54,7 +54,7 @@ export default class OrdersController {
       return new ResponseErrorHandler().handleError(response, StatusCodeEnum.NotFound, error);
     }
 
-    const order: IOrderData = {
+    const order: OrderData = {
       orderId: orderData.orderId,
       details: orderData.details,
       createdAt: orderData.createdAt,

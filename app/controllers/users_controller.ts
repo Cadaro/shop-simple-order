@@ -36,11 +36,7 @@ export default class UsersController {
 
     try {
       const validatedUserData = await request.validateUsing(updateUserValidator);
-      if (
-        !validatedUserData.firstName &&
-        !validatedUserData.lastName &&
-        !validatedUserData.invoiceAddress
-      ) {
+      if (!validatedUserData.firstName && !validatedUserData.lastName) {
         return response.badRequest();
       }
       const userService = new UserService();

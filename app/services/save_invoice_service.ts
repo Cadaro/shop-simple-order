@@ -3,6 +3,8 @@ import db from '@adonisjs/lucid/services/db';
 import PrepareInvoice from '#services/prepare_invoice_service';
 import OrderInvoice from '#models/order_invoice';
 import InvoiceNumber from '#models/invoice_number';
+import InvoiceDataMapper from '#mappers/invoice/InvoiceDataToInvoiceDb';
+import OrderService from './order_service.js';
 
 export default class SaveInvoice {
   async save(invoiceData: OrderInvoiceData, options?: InvoiceNumberOptions) {
@@ -15,42 +17,24 @@ export default class SaveInvoice {
       const prepareInvoice = new PrepareInvoice(invoiceNumberOptions);
       const { currentInvoiceNumberSequence, newInvoiceNumber }: PreparedInvoiceNumber =
         await prepareInvoice.prepareNumber();
-      // const savedInvoiceHead = await OrderInvoice.create(
-      //   { ...invoiceData.order, invoiceId: invoiceNumber },
-      //   { client: trx }
-      // );
+      const invoiceMapper = new InvoiceDataMapper();
+      const savedInvoiceHead = await OrderInvoice.create(
+        invoiceMapper.mapInvoiceHead(invoiceData, newInvoiceNumber),
+        { client: trx }
+      );
 
-      const savedInvoiceHead = await OrderInvoice.create({
-        invoiceId: newInvoiceNumber,
-        orderId: invoiceData.order.orderId,
-        userId: '',
-        firstName: '',
-        lastName: '',
-        countryCode: invoiceData.address.countryCode,
-        streetName: invoiceData.address.streetName,
-        streetNumber: invoiceData.address.streetNumber,
-        apartmentNumber: invoiceData.address.apartmentNumber,
-        city: invoiceData.address.city,
-        postalCode: invoiceData.address.postalCode,
-        region: invoiceData.address.region,
-      });
-      // const savedInvoiceDetails = await savedInvoiceHead
-      //   .related('invoiceDetails')
-      //   .createMany(invoiceData.order.details);
+      const orderService = new OrderService();
+      const orderData = await orderService.fetchUserSingleOrder(invoiceData.orderId);
+      if (!orderData) {
+        throw Error(`Order ${invoiceData.orderId} is not found`);
+      }
 
-      const savedInvoiceDetails = await savedInvoiceHead.related('invoiceDetails').create({
-        invoiceId: newInvoiceNumber,
-        itemId: invoiceData.order.details[0].itemId,
-        itemName: '',
-        priceCurrency: invoiceData.order.details[0].currency,
-        qty: invoiceData.order.details[0].qty,
-        priceGross: invoiceData.order.details[0].itemPrice,
-        vatAmout: 0.0,
-        vatRate: 0.23,
-      });
+      const savedInvoiceDetails = await savedInvoiceHead
+        .related('invoiceDetails')
+        .createMany(invoiceMapper.mapInvoiceDetails(orderData.details));
 
       if (!savedInvoiceHead || !savedInvoiceDetails) {
-        throw new Error(`Could not create invoice for orderId = ${invoiceData.order.orderId}`);
+        throw new Error(`Could not create invoice for orderId = ${invoiceData.orderId}`);
       }
       await InvoiceNumber.updateOrCreate(
         {

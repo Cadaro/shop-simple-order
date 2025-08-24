@@ -1,10 +1,10 @@
-import { IStock } from '#types/stock';
+import { Stock } from '#types/stock';
 import { test } from '@japa/runner';
 
 test.group('Items show', () => {
   test('get list of items (stocks)', async ({ assert, client }) => {
     const response = await client.get('/api/stocks');
-    const stocks: Array<IStock> = response.body();
+    const stocks: Array<Stock> = response.body();
     response.assertStatus(200);
     assert.isArray(stocks);
     assert.properties(
@@ -23,9 +23,9 @@ test.group('Items show', () => {
   });
   test('get detail of stock item', async ({ assert, client }) => {
     const responseStocks = await client.get('/api/stocks');
-    const stocks: Array<IStock> = responseStocks.body();
+    const stocks: Array<Stock> = responseStocks.body();
     const responseSingleStockItem = await client.get(`/api/stocks/${stocks[0].itemId}`);
-    const singleStockItem: IStock = responseSingleStockItem.body();
+    const singleStockItem: Stock = responseSingleStockItem.body();
     responseSingleStockItem.assertStatus(200);
     assert.isObject(singleStockItem);
     assert.properties(

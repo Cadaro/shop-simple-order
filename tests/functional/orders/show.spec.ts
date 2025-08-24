@@ -1,4 +1,4 @@
-import { IOrderData } from '#types/order';
+import { OrderData } from '#types/order';
 import { IToken } from '#types/token';
 import { test } from '@japa/runner';
 
@@ -15,7 +15,7 @@ test.group('Orders show', () => {
       .header('content-type', 'application/json');
     response.assertStatus(200);
 
-    const orderData: Array<IOrderData> = response.body();
+    const orderData: Array<OrderData> = response.body();
 
     assert.isArray(orderData);
     assert.onlyProperties(orderData[0], ['orderId', 'createdAt']);
@@ -31,7 +31,7 @@ test.group('Orders show', () => {
       .get('/api/orders')
       .bearerToken(authToken.token)
       .header('content-type', 'application/json');
-    const orderData: Array<IOrderData> = responseOrderList.body();
+    const orderData: Array<OrderData> = responseOrderList.body();
 
     const responseOrderDetails = await client
       .get(`/api/orders/${orderData[0].orderId}`)
@@ -40,10 +40,18 @@ test.group('Orders show', () => {
 
     responseOrderDetails.assertStatus(200);
 
-    const orderDeails: IOrderData = responseOrderDetails.body();
+    const orderDeails: OrderData = responseOrderDetails.body();
 
     assert.onlyProperties(orderDeails, ['orderId', 'createdAt', 'details']);
     assert.isArray(orderDeails.details);
-    assert.onlyProperties(orderDeails.details[0], ['itemId', 'qty', 'itemPrice', 'currency']);
+    assert.onlyProperties(orderDeails.details[0], [
+      'itemId',
+      'qty',
+      'itemPrice',
+      'currency',
+      'itemName',
+      'vatAmount',
+      'vatRate',
+    ]);
   });
 });

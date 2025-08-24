@@ -53,7 +53,6 @@ test.group('Edit user', () => {
       .bearerToken(authToken.token)
       .header('content-type', 'application/json')
       .json(userDataToEdit);
-
     responseEdit.assertStatus(204);
   });
 });
