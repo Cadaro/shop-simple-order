@@ -1,6 +1,6 @@
 import { OrderData } from '#types/order';
-import { IAddress } from '#types/user';
+import { Address } from '#types/address';
 
 export default class CreateOrderInvoice {
-  handle(invoiceData: { invoiceAddress: IAddress; order: OrderData }) {}
+  handle(invoiceData: { invoiceAddress: Address; order: OrderData }) {}
 }

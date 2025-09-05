@@ -1,6 +1,6 @@
 import { CountryCode } from '#types/countryCode';
 import { IToken } from '#types/token';
-import { IAddress } from '#types/user';
+import { Address } from '#types/address';
 import { test } from '@japa/runner';
 
 test.group('Edit user', () => {
@@ -38,7 +38,7 @@ test.group('Edit user', () => {
       .json({ email: 'test@example.com', password: 'Test123' });
     const authToken: IToken = responseAuth.body();
 
-    const invoiceAddress: IAddress = {
+    const invoiceAddress: Address = {
       city: 'Test city',
       countryCode: CountryCode.PL,
       postalCode: '32-080',

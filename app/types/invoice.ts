@@ -1,10 +1,10 @@
 import { Currency } from '#types/order';
-import { IAddress } from '#types/user';
+import { Address } from '#types/address';
 
-type InvoiceCustomer = {
+export type InvoiceCustomerData = {
   firstName: string;
   lastName: string;
-  address: IAddress;
+  address: Address;
 };
 export type InvoiceItem = {
   itemId: string;
@@ -18,7 +18,7 @@ export type InvoiceItem = {
 type InvoiceData = {
   orderId: string;
   items: Array<InvoiceItem>;
-  customer: InvoiceCustomer;
+  customer: InvoiceCustomerData;
 };
 export type OrderInvoiceData = Readonly<InvoiceData>;
 
@@ -35,6 +35,16 @@ export type PreparedInvoiceNumber = Readonly<{
   currentInvoiceNumberSequence: number;
 }>;
 
-export interface Invoice {
+export interface InvoiceUtil {
   prepareNumber(): Promise<PreparedInvoiceNumber>;
+}
+
+export interface BaseInvoice {
+  save(invoiceData: OrderInvoiceData, options?: InvoiceNumberOptions): Promise<string>;
+}
+
+export interface BaseInvoiceCustomer {
+  fetchCustomerData(userId: string): Promise<InvoiceCustomerData>;
+  saveCustomerData(userId: string, data: InvoiceCustomerData): Promise<void>;
+  updateCustomerData(userId: string, data: Partial<InvoiceCustomerData>): Promise<void>;
 }

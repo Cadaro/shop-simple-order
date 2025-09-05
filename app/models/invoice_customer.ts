@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import { BaseModel, column } from '@adonisjs/lucid/orm';
+import { CountryCode } from '#types/countryCode';
 
 export default class InvoiceCustomers extends BaseModel {
   @column({ isPrimary: true, serializeAs: null })
@@ -33,7 +34,7 @@ export default class InvoiceCustomers extends BaseModel {
   declare region?: string;
 
   @column()
-  declare countryCode: string;
+  declare countryCode: CountryCode;
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime;

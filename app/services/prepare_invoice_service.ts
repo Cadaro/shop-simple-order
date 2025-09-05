@@ -1,10 +1,15 @@
 import InvoiceNumber from '#models/invoice_number';
-import { DateSuffix, Invoice, InvoiceNumberOptions, PreparedInvoiceNumber } from '#types/invoice';
+import {
+  DateSuffix,
+  InvoiceUtil,
+  InvoiceNumberOptions,
+  PreparedInvoiceNumber,
+} from '#types/invoice';
 import db from '@adonisjs/lucid/services/db';
 import { DateTime } from 'luxon';
 import string from '@adonisjs/core/helpers/string';
 
-export default class PrepareInvoice implements Invoice {
+export default class PrepareInvoice implements InvoiceUtil {
   private prefix: string;
   private separator: string;
   private useCurrentMonth: boolean;

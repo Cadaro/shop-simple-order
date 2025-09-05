@@ -1,18 +1,8 @@
 import { DateTime } from 'luxon';
-import { CountryCode } from '#types/countryCode';
-
-export interface IAddress {
-  streetName: string;
-  streetNumber: string;
-  apartmentNumber?: string;
-  city: string;
-  postalCode: string;
-  region?: string;
-  countryCode: CountryCode;
-}
+import { Address } from '#types/address';
 
 export interface ISavedDeliveryData {
-  deliveryAddress?: IAddress;
+  deliveryAddress?: Address;
   courierPickupPointData?: Map<string, string>;
 }
 
@@ -24,7 +14,7 @@ export interface IUserData {
   firstName?: string;
   lastName?: string;
   deliveryData?: ISavedDeliveryData;
-  invoiceAddress?: IAddress;
+  invoiceAddress?: Address;
 }
 
 export interface IUserDb {

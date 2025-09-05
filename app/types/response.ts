@@ -6,4 +6,5 @@ export enum StatusCodeEnum {
   BadRequest = 'badRequest',
   Forbidden = 'forbidden',
   NotFound = 'notFound',
+  Conflict = 'conflict',
 }

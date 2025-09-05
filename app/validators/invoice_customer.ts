@@ -9,7 +9,22 @@ export const createInvoiceCustomerValidator = vine.compile(
   vine.object({
     firstName: vine.string().minLength(3).maxLength(50),
     lastName: vine.string().minLength(2).maxLength(50),
-    invoiceAddress: vine
+    address: vine.object({
+      streetName: vine.string().minLength(3),
+      streetNumber: vine.string().minLength(1).maxLength(10),
+      apartmentNumber: vine.string().minLength(1).maxLength(10).optional(),
+      city: vine.string().minLength(3).maxLength(30),
+      postalCode: vine.string().postalCode({ countryCode: [CountryCode.PL] }),
+      region: vine.string().minLength(2).maxLength(20).optional(),
+      countryCode: vine.enum(CountryCode),
+    }),
+  })
+);
+export const updateInvoiceCustomerValidator = vine.compile(
+  vine.object({
+    firstName: vine.string().minLength(3).maxLength(50).optional(),
+    lastName: vine.string().minLength(2).maxLength(50).optional(),
+    address: vine
       .object({
         streetName: vine.string().minLength(3),
         streetNumber: vine.string().minLength(1).maxLength(10),

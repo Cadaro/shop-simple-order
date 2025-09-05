@@ -19,7 +19,7 @@ export default class extends BaseSchema {
       table.integer('qty').notNullable().comment('ordered qty');
       table.float('price_gross').notNullable().comment('gross price');
       table.string('price_currency').notNullable().comment('price currency');
-      table.float('vat_amout').notNullable().comment('total price with vat');
+      table.float('vat_amount').notNullable().comment('total price with vat');
       table.float('vat_rate').notNullable().comment('vat rate');
       table.timestamp('created_at');
       table.timestamp('updated_at');
