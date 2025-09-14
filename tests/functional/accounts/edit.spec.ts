@@ -1,14 +1,13 @@
 import { CountryCode } from '#types/countryCode';
-import { IToken } from '#types/token';
+import { Token } from '#types/token';
 import { Address } from '#types/address';
 import { test } from '@japa/runner';
 
+const userAuthData = { email: 'test@example.com', password: 'Test123' };
 test.group('Edit user', () => {
   test('edit user data with given firstName and lastName', async ({ client }) => {
-    const responseAuth = await client
-      .post('/api/auth/token')
-      .json({ email: 'test@example.com', password: 'Test123' });
-    const authToken: IToken = responseAuth.body();
+    const responseAuth = await client.post('/api/auth/token').json(userAuthData);
+    const authToken: Token = responseAuth.body();
 
     const userDataToEdit = { firstName: 'testName', lastName: 'testLastName' };
 
@@ -20,10 +19,8 @@ test.group('Edit user', () => {
     responseEdit.assertStatus(204);
   });
   test('edit user data without given firstName and lastName', async ({ client }) => {
-    const responseAuth = await client
-      .post('/api/auth/token')
-      .json({ email: 'test@example.com', password: 'Test123' });
-    const authToken: IToken = responseAuth.body();
+    const responseAuth = await client.post('/api/auth/token').json(userAuthData);
+    const authToken: Token = responseAuth.body();
 
     const responseEdit = await client
       .patch(`/api/auth/users/`)
@@ -33,10 +30,8 @@ test.group('Edit user', () => {
   });
 
   test('edit user data with invoice address', async ({ client }) => {
-    const responseAuth = await client
-      .post('/api/auth/token')
-      .json({ email: 'test@example.com', password: 'Test123' });
-    const authToken: IToken = responseAuth.body();
+    const responseAuth = await client.post('/api/auth/token').json(userAuthData);
+    const authToken: Token = responseAuth.body();
 
     const invoiceAddress: Address = {
       city: 'Test city',

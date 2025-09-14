@@ -3,10 +3,11 @@ import hash from '@adonisjs/core/services/hash';
 import { compose } from '@adonisjs/core/helpers';
 import { BaseModel, column, hasMany, hasOne } from '@adonisjs/lucid/orm';
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid';
-import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens';
+import { AccessToken, DbAccessTokensProvider } from '@adonisjs/auth/access_tokens';
 import type { HasMany, HasOne } from '@adonisjs/lucid/types/relations';
 import Order from '#models/order';
 import InvoiceCustomers from '#models/invoice_customer';
+import { UserRolesEnum } from '#types/user';
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -14,6 +15,7 @@ const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
 });
 
 export default class User extends compose(BaseModel, AuthFinder) {
+  currentAccessToken?: AccessToken;
   @hasMany(() => Order, { foreignKey: 'userId' })
   declare orders: HasMany<typeof Order>;
 
@@ -43,6 +45,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column({ serializeAs: 'userId' })
   declare uuid: string;
+
+  @column()
+  declare role: UserRolesEnum;
 
   static accessTokens = DbAccessTokensProvider.forModel(User, {
     expiresIn: '24h',

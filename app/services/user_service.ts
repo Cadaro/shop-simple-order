@@ -1,11 +1,11 @@
 import User from '#models/user';
-import { IUserData, IUserDb } from '#types/user';
+import { UserData, UserDb } from '#types/user';
 import db from '@adonisjs/lucid/services/db';
 import { randomUUID } from 'crypto';
 
 export default class UserService {
-  async createUser(userData: IUserDb) {
-    const user: IUserData = await db.transaction(async (trx) => {
+  async createUser(userData: UserDb) {
+    const user: UserData = await db.transaction(async (trx) => {
       const exists = await User.findBy({ email: userData.email }, { client: trx });
       if (exists) {
         throw new Error(`Email ${userData.email} already exists`);
@@ -18,12 +18,12 @@ export default class UserService {
       if (!createdUser) {
         throw new Error(`Cannot create user account for ${userData.email}`);
       }
-      return createdUser.serialize() as IUserData;
+      return createdUser.serialize() as UserData;
     });
     return { userId: user.userId };
   }
 
-  async updateUser(userData: IUserData) {
+  async updateUser(userData: UserData) {
     await db.transaction(async (trx) => {
       const user = await User.findBy({ uuid: userData.userId }, { client: trx });
       if (!user) {
@@ -44,6 +44,6 @@ export default class UserService {
       throw new Error(`User ${uuid} not found`);
     }
     await userData.load('invoice_customers');
-    return userData.serialize() as IUserData;
+    return userData.serialize() as UserData;
   }
 }

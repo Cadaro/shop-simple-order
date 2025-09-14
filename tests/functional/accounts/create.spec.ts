@@ -1,23 +1,20 @@
-import { IToken } from '#types/token';
-import { IUserData } from '#types/user';
+import { Token } from '#types/token';
+import { UserData } from '#types/user';
 import { test } from '@japa/runner';
 
+const userAuthData = { email: 'test@example.com', password: 'Test123' };
 test.group('Users create', () => {
   test('create new user', async ({ client, assert }) => {
-    const response = await client
-      .post('/api/auth/users')
-      .json({ email: 'test@example.com', password: 'Test123' });
+    const response = await client.post('/api/auth/users').json(userAuthData);
     response.assertStatus(200);
-    const user: IUserData = response.body();
+    const user: UserData = response.body();
     assert.properties(user, ['userId']);
   });
   test('get user token', async ({ client, assert, expectTypeOf }) => {
-    const response = await client
-      .post('/api/auth/token')
-      .json({ email: 'test@example.com', password: 'Test123' });
+    const response = await client.post('/api/auth/token').json(userAuthData);
 
     response.assertStatus(200);
-    const token: IToken = response.body();
+    const token: Token = response.body();
     assert.onlyProperties(token, ['token', 'type', 'expiresAt']);
     expectTypeOf(token).toMatchTypeOf<{
       type: string;
