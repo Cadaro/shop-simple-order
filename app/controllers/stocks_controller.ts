@@ -38,7 +38,7 @@ export default class StocksController {
     try {
       const createdSingleStockItemId =
         await this.stockService.createSingleItemStock(singleStockItem);
-      return response.ok({ itemId: createdSingleStockItemId });
+      return response.created({ itemId: createdSingleStockItemId });
     } catch (e) {
       return new ResponseErrorHandler().handleError(response, StatusCodeEnum.BadRequest, e);
     }

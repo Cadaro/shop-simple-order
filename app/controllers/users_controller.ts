@@ -19,7 +19,7 @@ export default class UsersController {
     const validatedUserData = await request.validateUsing(createUserValidator);
     try {
       const createdUser = await this.userService.createUser(validatedUserData);
-      return response.ok({ userId: createdUser.userId });
+      return response.created({ userId: createdUser.userId });
     } catch (e) {
       return new ResponseErrorHandler().handleError(response, StatusCodeEnum.BadRequest, e);
     }
