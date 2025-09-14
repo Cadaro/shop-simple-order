@@ -22,7 +22,6 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT
   schemas:
     ErrorResponse:
       type: object
@@ -219,30 +218,37 @@ components:
       properties:
         itemId:
           type: string
-    OrderItem:
+    OrderSku:
       type: object
       properties:
-        stock_id:
+        itemId:
+          type: string
+        itemName:
+          type: string
+        qty:
           type: integer
-        quantity:
-          type: integer
+        itemPrice:
+          type: number
+          format: double
+        currency: 
+          type: string
+          enum: ["PLN", "EUR"]
+        vatAmount:
+          type: number
+          format: double
+        vatRate:
+          type: number
+          format: double
     Order:
       type: object
       properties:
-        id:
-          type: integer
-        user_id:
-          type: integer
-        items:
+        orderId:
+          type: string
+          format: uuid
+        details:
           type: array
           items:
-            $ref: '#/components/schemas/OrderItem'
-        total_price:
-          type: number
-          format: double
-        status:
-          type: string
-          example: pending
+            $ref: '#/components/schemas/OrderSku'
         created_at:
           type: string
           format: date-time
@@ -254,7 +260,7 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/OrderItem'
+            $ref: '#/components/schemas/OrderSku'
 paths:
   /api/stocks:
     get:
@@ -271,17 +277,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/StockFetchResponse'
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
     post:
       tags:
         - stocks
       summary: Create stock
-      description: Create a new stock entry. Requires authentication.
+      description: Create a new stock entry. Requires authentication. Admin only.
       security:
         - bearerAuth: []
       requestBody:
@@ -291,7 +291,7 @@ paths:
             schema:
               $ref: '#/components/schemas/StockCreateRequest'
       responses:
-        '200':
+        '201':
           description: Stock created
           content:
             application/json:
@@ -305,6 +305,12 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
           content:
             application/json:
               schema:
@@ -357,6 +363,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     post:
       tags:
         - orders
@@ -371,7 +383,7 @@ paths:
             schema:
               $ref: '#/components/schemas/OrderCreate'
       responses:
-        '201':
+        '200':
           description: Order created
           content:
             application/json:
@@ -416,6 +428,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Not found
           content:
@@ -439,6 +457,12 @@ paths:
                   $ref: '#/components/schemas/User'
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
           content:
             application/json:
               schema:
@@ -491,6 +515,12 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
           content:
             application/json:
               schema:
