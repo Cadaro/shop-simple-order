@@ -21,7 +21,10 @@ export default class StockService {
   async fetchSingleStockItem(itemId: string) {
     const singleStock = await Stock.findBy({ itemId });
     await singleStock!.load('photos');
-    return singleStock;
+    if (!singleStock) {
+      throw new Error(`Stock item ${itemId} not found`);
+    }
+    return singleStock.serialize() as StockItem;
   }
 
   async fetchAvailableStock() {
@@ -54,7 +57,7 @@ export default class StockService {
     if (exists) {
       throw new Error(`Stock item = ${stock.itemId} already exists`);
     }
-    const createdStockId = await db.transaction(async (trx) => {
+    const createdStockItemId = await db.transaction(async (trx) => {
       const savedStockHead = await Stock.create(stock, { client: trx });
       const savedStockPhotos = await savedStockHead.related('photos').createMany(stock.photos);
 
@@ -62,8 +65,8 @@ export default class StockService {
         throw new Error(`Could not create new stock item = ${stock.itemId}`);
       }
 
-      return savedStockHead.id;
+      return savedStockHead.itemId;
     });
-    return createdStockId;
+    return createdStockItemId;
   }
 }

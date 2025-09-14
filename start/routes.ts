@@ -19,11 +19,13 @@ router
     router.group(() => {
       router
         .resource('stocks', StocksController)
+        .params({ stocks: 'itemId' })
         .apiOnly()
         .only(['index', 'show', 'store'])
         .use(['store'], middleware.auth());
       router
         .resource('orders', OrdersController)
+        .params({ orders: 'orderId' })
         .apiOnly()
         .only(['index', 'store', 'show'])
         .use(['index', 'store', 'show'], middleware.auth());

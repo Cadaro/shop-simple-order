@@ -57,7 +57,7 @@ export default class OrdersController {
       return response.unauthorized();
     }
     try {
-      const orderData = await this.orderService.fetchUserSingleOrder(params.id);
+      const orderData = await this.orderService.fetchUserSingleOrder(params.orderId);
       if (await bouncer.with(OrderPolicy).denies('view', orderData!)) {
         return response.forbidden();
       }
