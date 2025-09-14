@@ -3,17 +3,31 @@ import { HttpContext } from '@adonisjs/core/http';
 import { OrderData } from '#types/order';
 import StockService from '#services/stock_service';
 import OrderService from '#services/order_service';
-import { IResponseError, StatusCodeEnum } from '#types/response';
+import { StatusCodeEnum } from '#types/response';
 import ResponseErrorHandler from '#exceptions/response';
+import { inject } from '@adonisjs/core';
+import OrderPolicy from '#policies/order_policy';
 
+@inject()
 export default class OrdersController {
-  async index({ auth, response }: HttpContext) {
+  constructor(
+    private orderService: OrderService,
+    private stockService: StockService
+  ) {}
+
+  async index({ auth, bouncer, response }: HttpContext) {
     if (!auth.isAuthenticated) {
       return response.unauthorized();
     }
 
-    const orderService = new OrderService();
-    const orderList: Array<OrderData> = await orderService.fetchUserOrderList(auth.user!.id);
+    if (!auth.user) {
+      return response.unauthorized();
+    }
+
+    const orderList: Array<OrderData> = await this.orderService.fetchUserOrderList(auth.user.id);
+    if (await bouncer.with(OrderPolicy).denies('viewList')) {
+      return response.forbidden();
+    }
 
     return response.ok(orderList);
   }
@@ -26,10 +40,8 @@ export default class OrdersController {
     const orderedItems = await request.validateUsing(createOrderDetailValidator);
 
     try {
-      const stockService = new StockService();
-      const orderService = new OrderService();
-      await stockService.updateStock(orderedItems.items);
-      const orderData: OrderData = await orderService.createOrder(
+      await this.stockService.updateStock(orderedItems.items);
+      const orderData: OrderData = await this.orderService.createOrder(
         orderedItems.items,
         auth.user!.id
       );
@@ -44,22 +56,21 @@ export default class OrdersController {
     if (!auth.isAuthenticated) {
       return response.unauthorized();
     }
-    const orderService = new OrderService();
-    const orderData = await orderService.fetchUserSingleOrder(params.id);
-    if (await bouncer.with('OrderPolicy').denies('view', orderData!)) {
-      return response.forbidden();
-    }
-    if (!orderData) {
-      const error: IResponseError = { errors: [{ message: `Order ${params.id} not found` }] };
-      return new ResponseErrorHandler().handleError(response, StatusCodeEnum.NotFound, error);
-    }
+    try {
+      const orderData = await this.orderService.fetchUserSingleOrder(params.id);
+      if (await bouncer.with(OrderPolicy).denies('view', orderData!)) {
+        return response.forbidden();
+      }
 
-    const order: OrderData = {
-      orderId: orderData.orderId,
-      details: orderData.details,
-      createdAt: orderData.createdAt,
-    };
+      const order: OrderData = {
+        orderId: orderData.orderId,
+        details: orderData.details,
+        createdAt: orderData.createdAt,
+      };
 
-    return response.ok(order);
+      return response.ok(order);
+    } catch (e) {
+      return new ResponseErrorHandler().handleError(response, StatusCodeEnum.NotFound, e);
+    }
   }
 }

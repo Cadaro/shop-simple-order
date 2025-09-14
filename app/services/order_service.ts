@@ -29,7 +29,7 @@ export default class OrderService {
   async fetchUserSingleOrder(orderId: string) {
     const orderData = await Order.findBy({ orderId });
     if (!orderData) {
-      return null;
+      throw new Error(`Order ${orderId} not found`);
     }
     await orderData.load('details');
     return orderData;

@@ -1,5 +1,5 @@
 import { OrderData } from '#types/order';
-import { IToken } from '#types/token';
+import { Token } from '#types/token';
 import { test } from '@japa/runner';
 
 test.group('Orders show', () => {
@@ -7,7 +7,7 @@ test.group('Orders show', () => {
     const responseAuth = await client
       .post('/api/auth/token')
       .json({ email: 'test@example.com', password: 'Test123' });
-    const authToken: IToken = responseAuth.body();
+    const authToken: Token = responseAuth.body();
 
     const response = await client
       .get('/api/orders')
@@ -25,7 +25,7 @@ test.group('Orders show', () => {
     const responseAuth = await client
       .post('/api/auth/token')
       .json({ email: 'test@example.com', password: 'Test123' });
-    const authToken: IToken = responseAuth.body();
+    const authToken: Token = responseAuth.body();
 
     const responseOrderList = await client
       .get('/api/orders')
