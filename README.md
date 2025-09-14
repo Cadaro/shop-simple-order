@@ -1,9 +1,27 @@
 # Description
 
-Mini-project **shop-simple-order** is simple API presentation of online shop.
-Created with [AdonisJs](https://adonisjs.com).
+**ShopCore API** is a modern, lightweight e-commerce API platform built with [AdonisJs](https://adonisjs.com). It provides essential functionalities for running an online store, including:
 
-Check AdonisJS official [documentation](https://docs.adonisjs.com/guides/preface/introduction) to learn more about creating apps.
+- Product inventory management
+- User authentication and accounts
+- Order processing
+- RESTful API architecture
+- Scalable and maintainable codebase
+
+This platform is actively developed and expanding with new features to meet various e-commerce needs. Perfect for small to medium-sized businesses looking for a customizable, API-first e-commerce solution.
+
+# Upcoming Features
+
+- 🚚 Multiple courier gateway integrations
+- 💳 Multiple payment gateway integrations
+- 📦 Multi-step order processing
+- 📨 Order notifications
+- 🔐 Advanced user roles and permissions
+- 📦 Product variants and attributes
+- 🏷️ Dynamic pricing rules
+- 🌐 Multi-language support
+- 🛒 Advanced shopping cart with saved items
+- 📊 Sales analytics and reporting
 
 ## Installation
 
@@ -45,26 +63,11 @@ npm run dev
 
 ## List of available routes
 
-| Method | Route               | Auth Required | Description               |
-| ------ | ------------------- | ------------- | ------------------------- |
-| GET    | /api/stocks         | No            | View available stock      |
-| POST   | /api/stocks         | Yes           | Create new stock item     |
-| GET    | /api/stocks/:id     | No            | View one stock item       |
-| GET    | /api/orders         | Yes           | View all user orders      |
-| POST   | /api/orders         | Yes           | Create new order          |
-| GET    | /api/orders/:id     | Yes           | View one user order       |
-| GET    | /api/auth/users     | Yes           | View user data            |
-| PATCH  | /api/auth/users/:id | Yes           | Update user data          |
-| POST   | /api/auth/users     | No            | Create new user           |
-| POST   | /api/auth/token     | No            | Create new token for user |
-
-You can also run
+To list all available routes, run
 
 ```
 node ace list:routes
 ```
-
-to list all available routes.
 
 ## Examples
 
@@ -96,34 +99,11 @@ curl --location 'localhost:3333/api/auth/token' \
 }'
 ```
 
-4. Create new order - authentication token is needed
-   All you need to provide is itemId that you get in step 1, qty, itemPrice and currency.
+## Additional documentation
 
-```
-curl --location 'localhost:3333/api/orders' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {{token}}' \
---data '{
-    "items": [
-        {
-            "itemId": "bf9fffb6-9708-46bc-a54a-2162acbc89fa",
-            "qty": 2,
-            "itemPrice": 9.99,
-            "currency": "EUR"
-        },
-        {
-            "itemId": "0024fb23-7fbc-4472-993d-f2e0019b0eaa",
-            "qty": 1,
-            "itemPrice": 7.99,
-            "currency": "EUR"
-        }
-    ]
-}'
-```
+API documentation follows OpenAPI 3.1.0 specification and is available at:
 
-5. Get all user's orders
+- Repository URL: `https://github.com/Cadaro/shop-simple-order/blob/main/docs/openapi.yaml` [openapi.yaml](https://github.com/Cadaro/shop-simple-order/blob/main/docs/openapi.yaml)
+- Interactive documentation: Import the OpenAPI specification from `docs/openapi.yaml` into [Swagger Editor Next](https://editor-next.swagger.io)
 
-```
-curl --location 'localhost:3333/api/orders' \
---header 'Authorization: Bearer {{token}}'
-```
+For implementation examples and best practices, refer to our [Wiki](https://github.com/Cadaro/shop-simple-order/wiki) (coming soon).

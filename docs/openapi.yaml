@@ -1,0 +1,529 @@
+openapi: 3.1.3
+info:
+  title: ShopCore API
+  description: |
+    OpenAPI specification for the ShopCore app.
+    Contains endpoints for stocks, orders, users, and token authentication.
+  version: "1.0.0"
+servers:
+  - url: http://localhost:3333
+    description: Local development server
+tags:
+  - name: stocks
+    description: Stock listing and creation
+  - name: orders
+    description: Orders management for authenticated users
+  - name: users
+    description: User management and registration
+  - name: auth
+    description: Authentication
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    Address:
+      type: object
+      properties:
+        streetName:
+          type: string
+        streetNumber:
+          type: string
+        apartmentNumber:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        region:
+          type: string
+        countryCode:
+          type: string
+          enum: ["PL"]
+    DeliveryData:
+      type: object
+      properties:
+        deliveryAddress:
+          $ref: '#/components/schemas/Address'
+        courierPickupPointData:
+          type: [ 'null', object ]
+        
+    User:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        firstName:
+          type: [ string, "null" ]
+        lastName:
+          type: [ string, "null" ]
+        invoiceAddress:
+          $ref: '#/components/schemas/Address'
+        deliveryData:
+          $ref: '#/components/schemas/DeliveryData'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: [ string, "null" ]
+          format: date-time
+    UserCreate:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    UserCreateResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+    UserUpdate:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+    TokenRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    TokenResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        type:
+          type: string
+          enum:
+          - Bearer
+        expiresIn:
+          type: int64
+          description: seconds until expiry
+    StockPhoto:
+      type: object
+      properties:
+        url:
+          type: string
+        name:
+          type: [string, "null"]
+    StockFetchResponse:
+      type: object
+      properties:
+        itemId:
+          type: string
+        price:
+          type: number
+          format: double
+          example: [9.99]
+        priceCurrency:
+          type: string
+          enum: ["PLN", "EUR"]
+        vatAmount:
+          type: number
+          format: double
+        vatRate:
+          type: number
+          format: double
+        name:
+          type: string
+        itemDescription:
+          type: string
+        size:
+          type: [string, "null"]
+        availableQty:
+          type: int32
+        photos:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockPhoto'
+    StockCreateRequest:
+      type: object
+      required:
+        - price
+        - priceCurrency
+        - vatAmount
+        - vatRate
+        - name
+        - itemDescription
+        - availableQty
+        - photos
+      properties:
+        itemId:
+          type: string
+          description: 'unique item identifier. If not provided, then uuid will be used'
+        price:
+          type: number
+          format: double
+          description: 'gross price'
+        priceCurrency:
+          type: string
+          enum: ["PLN", "EUR"]
+          description: 'price currency'
+        vatAmount:
+          type: number
+          format: double
+          description: 'vat amount of item price'
+        vatRate:
+          type: number
+          format: double
+          description: 'vat rate for example 0.23 as 23%'
+        name:
+          type: string
+          description: 'item name for example blue t-shirt'
+        itemDescription:
+          type: string
+          description: 'short item description'
+        size:
+          type: string
+          description: 'size of an item, for example XL, 34...'
+        availableQty:
+          type: int32
+          description: 'available quantity of an item'
+        photos:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockPhoto'
+          description: 'list of photos'
+    StockCreatedResponse:
+      type: object
+      properties:
+        itemId:
+          type: string
+    OrderItem:
+      type: object
+      properties:
+        stock_id:
+          type: integer
+        quantity:
+          type: integer
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        total_price:
+          type: number
+          format: double
+        status:
+          type: string
+          example: pending
+        created_at:
+          type: string
+          format: date-time
+    OrderCreate:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+paths:
+  /api/stocks:
+    get:
+      tags:
+        - stocks
+      summary: List stocks
+      description: Return a list of available stocks (products). Public endpoint.
+      responses:
+        '200':
+          description: A list of stocks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StockFetchResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - stocks
+      summary: Create stock
+      description: Create a new stock entry. Requires authentication.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockCreateRequest'
+      responses:
+        '200':
+          description: Stock created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockCreatedResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/stocks/{itemId}:
+    get:
+      tags:
+        - stocks
+      summary: Get stock
+      description: Retrieve details for a single stock item by itemId. Public endpoint.
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Stock found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockFetchResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/orders:
+    get:
+      tags:
+        - orders
+      summary: List orders
+      description: Return a list of orders for the authenticated user. Requires authentication.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - orders
+      summary: Create order
+      description: Create a new order for the authenticated user. Requires authentication.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreate'
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/orders/{orderId}:
+    get:
+      tags:
+        - orders
+      summary: Get order
+      description: Retrieve a single order by id for the authenticated user. Requires authentication.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/auth/users:
+    get:
+      tags:
+        - users
+      summary: Fetch data of authenticated
+      description: Return a data of registered user. Requires authentication.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A user data
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - users
+      summary: Register user
+      description: Create a new user (registration). Public endpoint.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreateResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    patch:
+      tags:
+        - users
+      summary: Update authenticated user
+      description: Update the authenticated user's profile (name/password). Requires authentication.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '204':
+          description: User updated
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/auth/token:
+    post:
+      tags:
+        - auth
+      summary: Obtain token
+      description: Obtain an authentication token by providing credentials (email and password). Public endpoint.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
