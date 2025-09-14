@@ -1,9 +1,9 @@
 {
-  "name": "shop-simple-order",
-  "version": "0.0.0",
+  "name": "shopcore-api",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "start": "node bin/server.js",
     "build": "node ace build",
@@ -39,7 +39,7 @@
     "@adonisjs/prettier-config": "^1.3.0",
     "@adonisjs/tsconfig": "^1.3.0",
     "@japa/api-client": "^2.0.3",
-    "@japa/assert": "^4.0.0",
+    "@japa/assert": "^3.0.0",
     "@japa/expect-type": "^2.0.2",
     "@japa/plugin-adonisjs": "^3.0.1",
     "@japa/runner": "^3.1.4",
