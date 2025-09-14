@@ -26,7 +26,7 @@ This platform is actively developed and expanding with new features to meet vari
 ## Installation
 
 ```
-git clone https://github.com/Cadaro/shop-simple-order.git
+git clone https://github.com/Cadaro/shopcore-api.git
 npm install
 ```
 
@@ -103,7 +103,7 @@ curl --location 'localhost:3333/api/auth/token' \
 
 API documentation follows OpenAPI 3.1.0 specification and is available at:
 
-- Repository URL: `https://github.com/Cadaro/shop-simple-order/blob/main/docs/openapi.yaml` [openapi.yaml](https://github.com/Cadaro/shop-simple-order/blob/main/docs/openapi.yaml)
+- Repository URL: `https://github.com/Cadaro/shop-simple-order/blob/master/docs/openapi.yaml` [openapi.yaml](https://github.com/Cadaro/shop-simple-order/blob/master/docs/openapi.yaml)
 - Interactive documentation: Import the OpenAPI specification from `docs/openapi.yaml` into [Swagger Editor Next](https://editor-next.swagger.io)
 
 For implementation examples and best practices, refer to our [Wiki](https://github.com/Cadaro/shop-simple-order/wiki) (coming soon).

@@ -127,9 +127,9 @@ components:
           type: string
           enum:
           - Bearer
-        expiresIn:
-          type: int64
-          description: seconds until expiry
+        expiresAt:
+          type: date-time
+          description: expiration date and time
     StockPhoto:
       type: object
       properties:
@@ -145,7 +145,6 @@ components:
         price:
           type: number
           format: double
-          example: [9.99]
         priceCurrency:
           type: string
           enum: ["PLN", "EUR"]
@@ -162,7 +161,7 @@ components:
         size:
           type: [string, "null"]
         availableQty:
-          type: int32
+          type: integer
         photos:
           type: array
           items:
@@ -208,7 +207,7 @@ components:
           type: string
           description: 'size of an item, for example XL, 34...'
         availableQty:
-          type: int32
+          type: integer
           description: 'available quantity of an item'
         photos:
           type: array
