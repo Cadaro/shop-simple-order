@@ -1,30 +1,68 @@
 import InvoiceCustomers from '#models/invoice_customer';
-import { InvoiceCustomerData } from '#types/invoice';
+import {
+  InvoiceCustomerData,
+  InvoiceCustomerTypeEnum,
+  InvoiceCustomerWithUserId,
+} from '#types/invoice';
 
 export default class InvoiceCustomerMapper {
   mapInvoiceCustomerModelToInvoiceCustomerType(
     invoiceCustomersModel: InvoiceCustomers
   ): InvoiceCustomerData {
-    return {
-      firstName: invoiceCustomersModel.firstName,
-      lastName: invoiceCustomersModel.lastName,
+    const result: Partial<InvoiceCustomerData> = {
+      customerType: invoiceCustomersModel.customerType,
       address: {
         city: invoiceCustomersModel.city,
         countryCode: invoiceCustomersModel.countryCode,
         streetName: invoiceCustomersModel.streetName,
         streetNumber: invoiceCustomersModel.streetNumber,
-        apartmentNumber: invoiceCustomersModel.apartmentNumber,
         postalCode: invoiceCustomersModel.postalCode,
-        region: invoiceCustomersModel.region,
       },
     };
+
+    if (
+      invoiceCustomersModel.customerType === InvoiceCustomerTypeEnum.PERSON &&
+      (!invoiceCustomersModel.firstName || !invoiceCustomersModel.lastName)
+    ) {
+      throw new Error('Missing firstName or lastName for customer of type PERSON');
+    }
+
+    if (
+      invoiceCustomersModel.customerType === InvoiceCustomerTypeEnum.COMPANY &&
+      (!invoiceCustomersModel.companyName || !invoiceCustomersModel.taxId)
+    ) {
+      throw new Error('Missing companyName or taxId for customer of type COMPANY');
+    }
+
+    if (invoiceCustomersModel.customerType === InvoiceCustomerTypeEnum.COMPANY) {
+      result.companyName = invoiceCustomersModel.companyName;
+      result.taxId = invoiceCustomersModel.taxId;
+    }
+
+    if (invoiceCustomersModel.customerType === InvoiceCustomerTypeEnum.PERSON) {
+      result.firstName = invoiceCustomersModel.firstName;
+      result.lastName = invoiceCustomersModel.lastName;
+    }
+
+    if (invoiceCustomersModel.apartmentNumber !== null) {
+      result.address!.apartmentNumber = invoiceCustomersModel.apartmentNumber;
+    }
+
+    if (invoiceCustomersModel.region !== null) {
+      result.address!.region = invoiceCustomersModel.region;
+    }
+
+    return result as InvoiceCustomerData;
   }
   mapInvoiceCustomerTypeToInvoiceCustomerModel(
-    invoiceCustomerData: Partial<InvoiceCustomerData>
+    invoiceCustomerData: Partial<InvoiceCustomerWithUserId>
   ): Partial<InvoiceCustomers> {
     return {
+      userId: invoiceCustomerData.userId,
       firstName: invoiceCustomerData.firstName,
       lastName: invoiceCustomerData.lastName,
+      companyName: invoiceCustomerData.companyName,
+      taxId: invoiceCustomerData.taxId,
       city: invoiceCustomerData.address?.city,
       streetName: invoiceCustomerData.address?.streetName,
       streetNumber: invoiceCustomerData.address?.streetNumber,
@@ -32,6 +70,7 @@ export default class InvoiceCustomerMapper {
       apartmentNumber: invoiceCustomerData.address?.apartmentNumber,
       postalCode: invoiceCustomerData.address?.postalCode,
       region: invoiceCustomerData.address?.region,
+      customerType: invoiceCustomerData.customerType,
     };
   }
 }

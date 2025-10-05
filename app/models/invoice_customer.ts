@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
 import { BaseModel, column } from '@adonisjs/lucid/orm';
 import { CountryCode } from '#types/countryCode';
+import { InvoiceCustomerTypeEnum } from '#types/invoice';
 
 export default class InvoiceCustomers extends BaseModel {
   @column({ isPrimary: true, serializeAs: null })
@@ -10,10 +11,16 @@ export default class InvoiceCustomers extends BaseModel {
   declare userId: string;
 
   @column()
-  declare firstName: string;
+  declare firstName?: string;
 
   @column()
-  declare lastName: string;
+  declare lastName?: string;
+
+  @column()
+  declare companyName?: string;
+
+  @column()
+  declare taxId?: string;
 
   @column()
   declare streetName: string;
@@ -35,6 +42,9 @@ export default class InvoiceCustomers extends BaseModel {
 
   @column()
   declare countryCode: CountryCode;
+
+  @column()
+  declare customerType: InvoiceCustomerTypeEnum;
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime;

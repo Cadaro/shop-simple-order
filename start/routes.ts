@@ -13,6 +13,7 @@ import OrdersController from '#controllers/orders_controller';
 import TokenController from '#controllers/token_controller';
 import UsersController from '#controllers/users_controller';
 import StocksController from '#controllers/stocks_controller';
+import InvoiceCustomersController from '#controllers/invoice_customers_controller';
 
 router
   .group(() => {
@@ -29,6 +30,14 @@ router
         .apiOnly()
         .only(['index', 'store', 'show'])
         .use(['index', 'store', 'show'], middleware.auth());
+      router
+        .resource('customers/invoice-data', InvoiceCustomersController)
+        .apiOnly()
+        .only(['index', 'store'])
+        .use(['index', 'store'], middleware.auth());
+      router
+        .patch('customers/invoice-data', [InvoiceCustomersController, 'update'])
+        .use(middleware.auth());
     });
     router
       .group(() => {

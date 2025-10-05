@@ -1,6 +1,10 @@
 import InvoiceCustomerMapper from '#mappers/invoice/InvoiceCustomerMapper';
 import InvoiceCustomers from '#models/invoice_customer';
-import { BaseInvoiceCustomer, InvoiceCustomerData } from '#types/invoice';
+import {
+  BaseInvoiceCustomer,
+  InvoiceCustomerData,
+  InvoiceCustomerWithUserId,
+} from '#types/invoice';
 import db from '@adonisjs/lucid/services/db';
 
 /**
@@ -17,7 +21,7 @@ export default class InvoiceCustomer implements BaseInvoiceCustomer {
     }
     return this.invoiceCustomerMapper.mapInvoiceCustomerModelToInvoiceCustomerType(
       invoiceCustomerData
-    );
+    ) as InvoiceCustomerData;
   }
   /**
    * Saves invoice customer data for the given user.
@@ -27,17 +31,22 @@ export default class InvoiceCustomer implements BaseInvoiceCustomer {
    * @param data - The invoice customer data to save.
    * @throws Error if customer data already exists for the user.
    */
-  async saveCustomerData(userId: string, data: Required<InvoiceCustomerData>): Promise<void> {
-    await db.transaction(async (trx) => {
-      const invoiceCustomer = await InvoiceCustomers.findBy({ userId }, { client: trx });
+  async saveCustomerData(data: InvoiceCustomerWithUserId): Promise<number> {
+    const invoiceDataId = await db.transaction(async (trx) => {
+      const invoiceCustomer = await InvoiceCustomers.findBy(
+        { userId: data.userId },
+        { client: trx }
+      );
       if (invoiceCustomer) {
-        throw new Error(`Invoice customer data already exists for user ${userId}`);
+        throw new Error(`Invoice customer data already exists for user ${data.userId}`);
       }
 
-      await InvoiceCustomers.create(
+      const invoiceData = await InvoiceCustomers.create(
         this.invoiceCustomerMapper.mapInvoiceCustomerTypeToInvoiceCustomerModel(data)
       );
+      return invoiceData.id;
     });
+    return invoiceDataId;
   }
 
   /**
@@ -47,11 +56,14 @@ export default class InvoiceCustomer implements BaseInvoiceCustomer {
    * @param data - The new invoice customer data.
    * @throws Error if invoice data for the user is not found.
    */
-  async updateCustomerData(userId: string, data: Partial<InvoiceCustomerData>): Promise<void> {
+  async updateCustomerData(data: Partial<InvoiceCustomerWithUserId>): Promise<void> {
     await db.transaction(async (trx) => {
-      const invoiceCustomer = await InvoiceCustomers.findBy({ userId }, { client: trx });
+      const invoiceCustomer = await InvoiceCustomers.findBy(
+        { userId: data.userId },
+        { client: trx }
+      );
       if (!invoiceCustomer) {
-        throw new Error(`Invoice data for user ${userId} not found`);
+        throw new Error(`Invoice data for user ${data.userId} not found`);
       }
 
       await invoiceCustomer
