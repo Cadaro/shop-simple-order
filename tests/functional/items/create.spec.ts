@@ -17,9 +17,20 @@ const item: StockItem = {
   photos: [{ url: '../some/path/to/photo', name: 'photo of nice t-shirt' }],
 };
 test.group('Items create', () => {
-  test('Create a new item by role user', async ({ client }) => {
+  test('Create a new item by unauthenticated user', async ({ client }) => {
     const response = await client.post('/api/stocks').json(item);
     response.assertStatus(401);
+  });
+  test('Create a new item by role user', async ({ client }) => {
+    const user = await User.create({
+      email: 'user@example.com',
+      password: 'user123',
+      role: UserRolesEnum.USER,
+      uuid: randomUUID(),
+    });
+
+    const response = await client.post('/api/stocks').json(item).loginAs(user);
+    response.assertStatus(403);
   });
   test('Create a new item by role admin', async ({ assert, client }) => {
     const user = await User.create({
@@ -30,7 +41,7 @@ test.group('Items create', () => {
     });
 
     const response = await client.post('/api/stocks').json(item).loginAs(user);
-    response.assertStatus(200);
+    response.assertStatus(201);
     const body = response.body();
     assert.onlyProperties(body, ['itemId']);
   });

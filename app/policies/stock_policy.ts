@@ -6,7 +6,7 @@ import { UserAbilitiesEnum, UserRolesEnum } from '#types/user';
 export default class StockPolicy extends BasePolicy {
   create(user: User): AuthorizerResponse {
     if (!user.currentAccessToken) {
-      return user.role === UserRolesEnum.ADMIN;
+      return false;
     }
 
     return (
