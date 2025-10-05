@@ -15,11 +15,12 @@ export default class OrderPolicy extends BasePolicy {
       user.currentAccessToken.allows(UserAbilitiesEnum.ORDERS_VIEW)
     );
   }
-  viewList(user: User): AuthorizerResponse {
+  viewList(user: User, orderList: Order[]): AuthorizerResponse {
     if (!user.currentAccessToken) {
       return false;
     }
     return (
+      orderList.every((order) => order.userId === user.id) &&
       user.role === UserRolesEnum.USER &&
       user.currentAccessToken.allows(UserAbilitiesEnum.ORDERS_VIEW)
     );

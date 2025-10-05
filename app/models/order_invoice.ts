@@ -3,6 +3,7 @@ import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm';
 import { CountryCode } from '#types/countryCode';
 import type { HasMany } from '@adonisjs/lucid/types/relations';
 import OrderInvoiceDetail from './order_invoice_detail.js';
+import { InvoiceCustomerTypeEnum } from '#types/invoice';
 
 export default class OrderInvoice extends BaseModel {
   @hasMany(() => OrderInvoiceDetail, { foreignKey: 'invoiceId', localKey: 'invoiceId' })
@@ -18,10 +19,16 @@ export default class OrderInvoice extends BaseModel {
   declare orderId: string;
 
   @column()
-  declare firstName: string;
+  declare firstName?: string;
 
   @column()
-  declare lastName: string;
+  declare lastName?: string;
+
+  @column()
+  declare companyName?: string;
+
+  @column()
+  declare taxId?: string;
 
   @column()
   declare streetName: string;
@@ -43,6 +50,9 @@ export default class OrderInvoice extends BaseModel {
 
   @column()
   declare countryCode: CountryCode;
+
+  @column()
+  declare customerType: InvoiceCustomerTypeEnum;
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime;

@@ -5,7 +5,7 @@ import db from '@adonisjs/lucid/services/db';
 
 export default class OrderService {
   async fetchUserOrderList(userId: number) {
-    const userOrderList: Array<OrderData> = await Order.findManyBy({ userId });
+    const userOrderList = await Order.findManyBy({ userId });
     return userOrderList;
   }
 

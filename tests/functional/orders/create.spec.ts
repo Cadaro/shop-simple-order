@@ -36,7 +36,7 @@ test.group('Orders create', () => {
       });
     const orderData: OrderData = response.body();
 
-    response.assertStatus(200);
+    response.assertStatus(201);
     assert.onlyProperties(orderData, ['orderId', 'details']);
   });
 

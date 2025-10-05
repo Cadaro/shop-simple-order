@@ -24,12 +24,12 @@ export default class OrdersController {
       return response.unauthorized();
     }
 
-    const orderList: Array<OrderData> = await this.orderService.fetchUserOrderList(auth.user.id);
-    if (await bouncer.with(OrderPolicy).denies('viewList')) {
+    const orderList = await this.orderService.fetchUserOrderList(auth.user.id);
+    if (await bouncer.with(OrderPolicy).denies('viewList', orderList)) {
       return response.forbidden();
     }
 
-    return response.ok(orderList);
+    return response.ok(orderList as Array<OrderData>);
   }
 
   async store({ auth, request, response }: HttpContext) {
@@ -46,7 +46,7 @@ export default class OrdersController {
         auth.user!.id
       );
 
-      return response.ok(orderData);
+      return response.created(orderData);
     } catch (e) {
       return new ResponseErrorHandler().handleError(response, StatusCodeEnum.BadRequest, e);
     }
