@@ -1,20 +1,12 @@
 import { DateTime } from 'luxon';
-import { Address } from '#types/address';
-
-export type SavedDeliveryData = {
-  deliveryAddress?: Address;
-  courierPickupPointData?: Map<string, string>;
-};
 
 export type UserData = {
   userId: string;
-  email?: string;
-  createdAt?: DateTime;
-  updatedAt?: DateTime;
-  firstName?: string;
-  lastName?: string;
-  deliveryData?: SavedDeliveryData;
-  invoiceAddress?: Address;
+  email: string;
+  firstName: string;
+  lastName: string;
+  createdAt: DateTime;
+  updatedAt: DateTime;
 };
 
 export type UserDb = {
@@ -31,6 +23,13 @@ export enum UserAbilitiesEnum {
   USERS_UPDATE = 'users:update',
   USERS_VIEW = 'users:view',
   STOCKS_VIEW = 'stocks:view',
+  INVOICES_ORDER_VIEW = 'invoices-order:view',
+  INVOICES_DATA_VIEW = 'invoices-data:view',
+  INVOICES_DATA_CREATE = 'invoices-data:create',
+  INVOICES_DATA_UPDATE = 'invoices-data:update',
+  DELIVERY_DATA_VIEW = 'delivery-data:view',
+  DELIVERY_DATA_CREATE = 'delivery-data:create',
+  DELIVERY_DATA_UPDATE = 'delivery-data:update',
 }
 
 export enum UserRolesEnum {

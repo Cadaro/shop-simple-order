@@ -1,4 +1,4 @@
-import { Token } from '#types/token';
+import { Token, TokenTypeEnum } from '#types/token';
 import { UserData } from '#types/user';
 import { test } from '@japa/runner';
 
@@ -6,7 +6,7 @@ const userAuthData = { email: 'test@example.com', password: 'Test123' };
 test.group('Users create', () => {
   test('create new user', async ({ client, assert }) => {
     const response = await client.post('/api/auth/users').json(userAuthData);
-    response.assertStatus(200);
+    response.assertStatus(201);
     const user: UserData = response.body();
     assert.properties(user, ['userId']);
   });
@@ -16,8 +16,8 @@ test.group('Users create', () => {
     response.assertStatus(200);
     const token: Token = response.body();
     assert.onlyProperties(token, ['token', 'type', 'expiresAt']);
-    expectTypeOf(token).toMatchTypeOf<{
-      type: string;
+    expectTypeOf(token).toMatchObjectType<{
+      type: TokenTypeEnum;
       token: string;
       expiresAt: Date;
     }>();

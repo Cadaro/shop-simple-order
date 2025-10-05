@@ -46,6 +46,10 @@ export default class UsersController {
       return response.unauthorized();
     }
 
+    if (!auth.user) {
+      return response.unauthorized();
+    }
+
     if (await bouncer.with(UserPolicy).denies('edit')) {
       return response.forbidden();
     }
@@ -55,8 +59,8 @@ export default class UsersController {
       if (!validatedUserData.firstName && !validatedUserData.lastName) {
         return response.badRequest();
       }
-      //todo: usuwanie wartości pola, które jest nullowe
-      await this.userService.updateUser({ userId: auth.user!.uuid, ...validatedUserData });
+      const updatedUserData: Partial<UserData> = { userId: auth.user.uuid, ...validatedUserData };
+      await this.userService.updateUser(updatedUserData);
       return response.noContent();
     } catch (e) {
       return new ResponseErrorHandler().handleError(response, StatusCodeEnum.BadRequest, e);

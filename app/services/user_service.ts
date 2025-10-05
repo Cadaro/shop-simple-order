@@ -23,18 +23,13 @@ export default class UserService {
     return { userId: user.userId };
   }
 
-  async updateUser(userData: UserData) {
+  async updateUser(userData: Partial<UserData>) {
     await db.transaction(async (trx) => {
       const user = await User.findBy({ uuid: userData.userId }, { client: trx });
       if (!user) {
         throw new Error(`User ${userData.userId} not found`);
       }
       await user.merge({ firstName: userData.firstName, lastName: userData.lastName }).save();
-      // if (userData.invoiceAddress) {
-      //   await user
-      //     .related('invoice_customers')
-      //     .updateOrCreate({ userId: userData.userId }, { ...userData.invoiceAddress });
-      // }
     });
   }
 
@@ -43,7 +38,7 @@ export default class UserService {
     if (!userData) {
       throw new Error(`User ${uuid} not found`);
     }
-    await userData.load('invoice_customers');
+
     return userData.serialize() as UserData;
   }
 }

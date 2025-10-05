@@ -28,26 +28,4 @@ test.group('Edit user', () => {
       .header('content-type', 'application/json');
     responseEdit.assertStatus(400);
   });
-
-  test('edit user data with invoice address', async ({ client }) => {
-    const responseAuth = await client.post('/api/auth/token').json(userAuthData);
-    const authToken: Token = responseAuth.body();
-
-    const invoiceAddress: Address = {
-      city: 'Test city',
-      countryCode: CountryCode.PL,
-      postalCode: '32-080',
-      streetName: 'Akacjowa',
-      streetNumber: '43A',
-    };
-
-    const userDataToEdit = { firstName: 'testName', lastName: 'testLastName', invoiceAddress };
-
-    const responseEdit = await client
-      .patch(`/api/auth/users/`)
-      .bearerToken(authToken.token)
-      .header('content-type', 'application/json')
-      .json(userDataToEdit);
-    responseEdit.assertStatus(204);
-  });
 });
