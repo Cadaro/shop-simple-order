@@ -1,5 +1,4 @@
 import ResponseErrorHandler from '#exceptions/response';
-import StockPolicy from '#policies/stock_policy';
 import StockService from '#services/stock_service';
 import { StatusCodeEnum } from '#types/response';
 import { createStockValidator } from '#validators/stock';
@@ -25,15 +24,8 @@ export default class StocksController {
     }
   }
 
-  async store({ auth, bouncer, request, response }: HttpContext) {
-    if (!auth.isAuthenticated) {
-      return response.unauthorized();
-    }
-
-    if (await bouncer.with(StockPolicy).denies('create')) {
-      return response.forbidden();
-    }
-
+  async store({ request, response }: HttpContext) {
+    // Admin middleware ensures only admins can reach this point
     const singleStockItem = await request.validateUsing(createStockValidator);
     try {
       const createdSingleStockItemId =
