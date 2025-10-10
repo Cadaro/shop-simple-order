@@ -2,37 +2,23 @@ import User from '#models/user';
 import Order from '#models/order';
 import { BasePolicy } from '@adonisjs/bouncer';
 import { AuthorizerResponse } from '@adonisjs/bouncer/types';
-import { UserAbilitiesEnum, UserRolesEnum } from '#types/user';
 
 export default class OrderPolicy extends BasePolicy {
   view(user: User, order: Order): AuthorizerResponse {
-    if (!user.currentAccessToken) {
-      return false;
-    }
-    return (
-      user.id === order.userId &&
-      user.role === UserRolesEnum.USER &&
-      user.currentAccessToken.allows(UserAbilitiesEnum.ORDERS_VIEW)
-    );
+    // User middleware ensures authentication and abilities
+    // Only check ownership
+    return user.id === order.userId;
   }
-  viewList(user: User, orderList: Order[]): AuthorizerResponse {
-    if (!user.currentAccessToken) {
-      return false;
-    }
-    return (
-      orderList.every((order) => order.userId === user.id) &&
-      user.role === UserRolesEnum.USER &&
-      user.currentAccessToken.allows(UserAbilitiesEnum.ORDERS_VIEW)
-    );
-  }
-  create(user: User): AuthorizerResponse {
-    if (!user.currentAccessToken) {
-      return user.role === UserRolesEnum.USER;
-    }
 
-    return (
-      user.role === UserRolesEnum.USER &&
-      user.currentAccessToken.allows(UserAbilitiesEnum.ORDERS_CREATE)
-    );
+  viewList(user: User, orderList: Order[]): AuthorizerResponse {
+    // User middleware ensures authentication and abilities
+    // Only check that all orders belong to the user
+    return orderList.every((order) => order.userId === user.id);
+  }
+
+  create(_user: User): AuthorizerResponse {
+    // User middleware ensures authentication and abilities
+    // Any authenticated user can create orders
+    return true;
   }
 }

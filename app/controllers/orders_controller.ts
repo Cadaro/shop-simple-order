@@ -16,15 +16,8 @@ export default class OrdersController {
   ) {}
 
   async index({ auth, bouncer, response }: HttpContext) {
-    if (!auth.isAuthenticated) {
-      return response.unauthorized();
-    }
-
-    if (!auth.user) {
-      return response.unauthorized();
-    }
-
-    const orderList = await this.orderService.fetchUserOrderList(auth.user.id);
+    // User middleware ensures authentication, so auth.user is guaranteed to exist
+    const orderList = await this.orderService.fetchUserOrderList(auth.user!.id);
     if (await bouncer.with(OrderPolicy).denies('viewList', orderList)) {
       return response.forbidden();
     }
@@ -33,10 +26,7 @@ export default class OrdersController {
   }
 
   async store({ auth, request, response }: HttpContext) {
-    if (!auth.isAuthenticated) {
-      return response.unauthorized();
-    }
-
+    // User middleware ensures authentication, so auth.user is guaranteed to exist
     const orderedItems = await request.validateUsing(createOrderDetailValidator);
 
     try {
@@ -52,10 +42,8 @@ export default class OrdersController {
     }
   }
 
-  async show({ bouncer, auth, params, response }: HttpContext) {
-    if (!auth.isAuthenticated) {
-      return response.unauthorized();
-    }
+  async show({ bouncer, params, response }: HttpContext) {
+    // User middleware ensures authentication, so auth.user is guaranteed to exist
     try {
       const orderData = await this.orderService.fetchUserSingleOrder(params.orderId);
       if (await bouncer.with(OrderPolicy).denies('view', orderData!)) {

@@ -1,9 +1,9 @@
 import Order from '#models/order';
-import { OrderData, OrderSku } from '#types/order';
+import { OrderData, OrderServiceContract, OrderSku } from '#types/order';
 import { randomUUID } from 'crypto';
 import db from '@adonisjs/lucid/services/db';
 
-export default class OrderService {
+export default class OrderService implements OrderServiceContract {
   async fetchUserOrderList(userId: number) {
     const userOrderList = await Order.findManyBy({ userId });
     return userOrderList;
@@ -26,7 +26,7 @@ export default class OrderService {
     return order;
   }
 
-  async fetchUserSingleOrder(orderId: string) {
+  async fetchUserSingleOrder(orderId: string): Promise<Order> {
     const orderData = await Order.findBy({ orderId });
     if (!orderData) {
       throw new Error(`Order ${orderId} not found`);
