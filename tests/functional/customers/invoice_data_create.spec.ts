@@ -1,5 +1,6 @@
 import InvoiceCustomers from '#models/invoice_customer';
 import User from '#models/user';
+import TokenService from '#services/token_service';
 import { CountryCode } from '#types/countryCode';
 import {
   InvoiceCustomerData,
@@ -34,10 +35,15 @@ test.group('Customers invoice create', () => {
         countryCode: CountryCode.PL,
       },
     };
+
+    // Use TokenService to create a proper token with correct abilities
+    const tokenService = new TokenService();
+    const token = await tokenService.createToken(user);
+
     const response = await client
       .post('/api/customers/invoice-data')
       .json(invoiceCustomerData)
-      .loginAs(user);
+      .bearerToken(token.token);
 
     response.assertStatus(201);
   });
@@ -56,10 +62,16 @@ test.group('Customers invoice create', () => {
         countryCode: CountryCode.PL,
       },
     };
+
+    // Use TokenService to create a proper token with correct abilities
+    const tokenService = new TokenService();
+    const token = await tokenService.createToken(user);
+
     const response = await client
       .post('/api/customers/invoice-data')
       .json(invoiceCustomerData)
-      .loginAs(user);
+      .bearerToken(token.token);
+
     response.assertStatus(201);
   });
 
@@ -79,10 +91,15 @@ test.group('Customers invoice create', () => {
         countryCode: CountryCode.PL,
       },
     };
+
+    // Use TokenService to create a proper token with correct abilities
+    const tokenService = new TokenService();
+    const token = await tokenService.createToken(user);
+
     const response = await client
       .post('/api/customers/invoice-data')
       .json(invoiceCustomerData)
-      .loginAs(user);
+      .bearerToken(token.token);
     response.assertStatus(422);
   });
 
@@ -102,10 +119,15 @@ test.group('Customers invoice create', () => {
         countryCode: CountryCode.PL,
       },
     };
+
+    // Use TokenService to create a proper token with correct abilities
+    const tokenService = new TokenService();
+    const token = await tokenService.createToken(user);
+
     const response = await client
       .post('/api/customers/invoice-data')
       .json(invoiceCustomerData)
-      .loginAs(user);
+      .bearerToken(token.token);
 
     response.assertStatus(422);
   });

@@ -1,5 +1,6 @@
 import InvoiceCustomers from '#models/invoice_customer';
 import User from '#models/user';
+import TokenService from '#services/token_service';
 import { CountryCode } from '#types/countryCode';
 import { InvoiceCustomerData, InvoiceCustomerTypeEnum } from '#types/invoice';
 import { UserRolesEnum } from '#types/user';
@@ -85,10 +86,15 @@ test.group('Customers invoice data update', (group) => {
         countryCode: CountryCode.PL,
       },
     };
+
+    const tokenService = new TokenService();
+    const token = await tokenService.createToken(userWithPersonData);
+
     const response = await client
       .patch('/api/customers/invoice-data')
       .json(invoiceDataToUpdate)
-      .loginAs(userWithPersonData);
+      .bearerToken(token.token);
+
     response.assertStatus(204);
     const invoiceDataAfterUpdate = await InvoiceCustomers.findBy('userId', userWithPersonData.uuid);
     const mapper = new (await import('#mappers/invoice/InvoiceCustomerMapper')).default();
@@ -109,10 +115,14 @@ test.group('Customers invoice data update', (group) => {
         countryCode: CountryCode.PL,
       },
     };
+    const tokenService = new TokenService();
+    const token = await tokenService.createToken(userWithCompanyData);
+
     const response = await client
       .patch('/api/customers/invoice-data')
       .json(invoiceDataToUpdate)
-      .loginAs(userWithCompanyData);
+      .bearerToken(token.token);
+
     response.assertStatus(204);
     const invoiceDataAfterUpdate = await InvoiceCustomers.findBy(
       'userId',

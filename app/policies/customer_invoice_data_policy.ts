@@ -2,37 +2,23 @@ import User from '#models/user';
 import InvoiceCustomer from '#models/invoice_customer';
 import { BasePolicy } from '@adonisjs/bouncer';
 import type { AuthorizerResponse } from '@adonisjs/bouncer/types';
-import { UserAbilitiesEnum, UserRolesEnum } from '#types/user';
 
 export default class CustomerInvoiceDataPolicy extends BasePolicy {
   view(user: User, customerInvoiceData: InvoiceCustomer): AuthorizerResponse {
-    if (!user.currentAccessToken) {
-      return false;
-    }
-    return (
-      user.uuid === customerInvoiceData.userId &&
-      user.role === UserRolesEnum.USER &&
-      user.currentAccessToken.allows(UserAbilitiesEnum.INVOICES_DATA_VIEW)
-    );
+    // User middleware ensures authentication and abilities
+    // Only check ownership
+    return user.uuid === customerInvoiceData.userId;
   }
-  create(user: User): AuthorizerResponse {
-    if (!user.currentAccessToken) {
-      return false;
-    }
 
-    return (
-      user.role === UserRolesEnum.USER &&
-      user.currentAccessToken.allows(UserAbilitiesEnum.INVOICES_DATA_CREATE)
-    );
+  create(_user: User): AuthorizerResponse {
+    // User middleware ensures authentication and abilities
+    // Any authenticated user can create invoice data
+    return true;
   }
+
   edit(user: User, customerInvoiceData: InvoiceCustomer): AuthorizerResponse {
-    if (!user.currentAccessToken) {
-      return false;
-    }
-    return (
-      user.uuid === customerInvoiceData.userId &&
-      user.role === UserRolesEnum.USER &&
-      user.currentAccessToken.allows(UserAbilitiesEnum.INVOICES_DATA_UPDATE)
-    );
+    // User middleware ensures authentication and abilities
+    // Only check ownership
+    return user.uuid === customerInvoiceData.userId;
   }
 }

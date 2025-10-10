@@ -1,5 +1,6 @@
 import InvoiceCustomers from '#models/invoice_customer';
 import User from '#models/user';
+import TokenService from '#services/token_service';
 import { CountryCode } from '#types/countryCode';
 import { InvoiceCustomerData, InvoiceCustomerTypeEnum } from '#types/invoice';
 import { UserRolesEnum } from '#types/user';
@@ -73,7 +74,11 @@ test.group('Customers invoice data show', (group) => {
     });
   });
   test('get invoice data for customer of type person', async ({ client, assert }) => {
-    const response = await client.get('/api/customers/invoice-data').loginAs(userWithPersonData);
+    // Use TokenService to create a proper token with correct abilities
+    const tokenService = new TokenService();
+    const token = await tokenService.createToken(userWithPersonData);
+    const response = await client.get('/api/customers/invoice-data').bearerToken(token.token);
+
     response.assertStatus(200);
 
     const body = response.body() as InvoiceCustomerData;
@@ -108,7 +113,11 @@ test.group('Customers invoice data show', (group) => {
   });
 
   test('get invoice data for customer of type company', async ({ client, assert }) => {
-    const response = await client.get('/api/customers/invoice-data').loginAs(userWithCompanyData);
+    // Use TokenService to create a proper token with correct abilities
+    const tokenService = new TokenService();
+    const token = await tokenService.createToken(userWithCompanyData);
+    const response = await client.get('/api/customers/invoice-data').bearerToken(token.token);
+
     response.assertStatus(200);
 
     const body = response.body() as InvoiceCustomerData;
@@ -143,25 +152,30 @@ test.group('Customers invoice data show', (group) => {
   });
 
   test('users can only access their own invoice data', async ({ client, assert }) => {
+    // Use TokenService to create a proper token with correct abilities
+    const tokenService = new TokenService();
+    const personToken = await tokenService.createToken(userWithPersonData);
+    const companyToken = await tokenService.createToken(userWithCompanyData);
+
     // Test that person user gets their own data
     const personResponse = await client
       .get('/api/customers/invoice-data')
-      .loginAs(userWithPersonData);
+      .bearerToken(personToken.token);
     personResponse.assertStatus(200);
     const personBody = personResponse.body() as InvoiceCustomerData;
     assert.equal(personBody.customerType, InvoiceCustomerTypeEnum.PERSON);
-    assert.equal(personBody.firstName, 'John');
-    assert.equal(personBody.lastName, 'Doe');
+    assert.equal(personBody.firstName, invoicePersonCustomerData.firstName);
+    assert.equal(personBody.lastName, invoicePersonCustomerData.lastName);
 
     // Test that company user gets their own data
     const companyResponse = await client
       .get('/api/customers/invoice-data')
-      .loginAs(userWithCompanyData);
+      .bearerToken(companyToken.token);
     companyResponse.assertStatus(200);
     const companyBody = companyResponse.body() as InvoiceCustomerData;
     assert.equal(companyBody.customerType, InvoiceCustomerTypeEnum.COMPANY);
-    assert.equal(companyBody.companyName, 'Acme Corp');
-    assert.equal(companyBody.taxId, '123-456-78-90');
+    assert.equal(companyBody.companyName, invoiceCompanyCustomerData.companyName);
+    assert.equal(companyBody.taxId, invoiceCompanyCustomerData.taxId);
 
     // Verify that the addresses are different (showing they're different users)
     assert.notEqual(personBody.address.streetName, companyBody.address.streetName);

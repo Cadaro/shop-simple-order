@@ -14,17 +14,10 @@ export default class InvoiceCustomersController {
   constructor(private invoiceCustomerService: InvoiceCustomerService) {}
 
   async index({ auth, response }: HttpContext) {
-    if (!auth.isAuthenticated) {
-      return response.unauthorized();
-    }
-
-    if (!auth.user) {
-      return response.unauthorized();
-    }
-
+    // User middleware ensures authentication, so auth.user is guaranteed to exist
     try {
       const customerInvoiceData = await this.invoiceCustomerService.fetchCustomerData(
-        auth.user.uuid
+        auth.user!.uuid
       );
       return response.ok(customerInvoiceData);
     } catch (e) {
@@ -33,14 +26,7 @@ export default class InvoiceCustomersController {
   }
 
   async store({ auth, request, response, bouncer }: HttpContext) {
-    if (!auth.isAuthenticated) {
-      return response.unauthorized();
-    }
-
-    if (!auth.user) {
-      return response.unauthorized();
-    }
-
+    // User middleware ensures authentication, so auth.user is guaranteed to exist
     if (await bouncer.with(CustomerInvoiceDataPolicy).denies('create')) {
       return response.forbidden();
     }
@@ -51,7 +37,7 @@ export default class InvoiceCustomersController {
 
     try {
       const customerInvoiceDataId = await this.invoiceCustomerService.saveCustomerData({
-        userId: auth.user.uuid,
+        userId: auth.user!.uuid,
         ...validatedInvoiceCustomerData,
       });
       return response.created({ id: customerInvoiceDataId });
@@ -61,21 +47,14 @@ export default class InvoiceCustomersController {
   }
 
   async update({ auth, request, response }: HttpContext) {
-    if (!auth.isAuthenticated) {
-      return response.unauthorized();
-    }
-
-    if (!auth.user) {
-      return response.unauthorized();
-    }
-
+    // User middleware ensures authentication, so auth.user is guaranteed to exist
     const validatedInvoiceCustomerData = await request.validateUsing(
       updateInvoiceCustomerValidator
     );
 
     try {
       await this.invoiceCustomerService.updateCustomerData({
-        userId: auth.user.uuid,
+        userId: auth.user!.uuid,
         ...validatedInvoiceCustomerData,
       });
       return response.noContent();
