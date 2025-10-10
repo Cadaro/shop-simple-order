@@ -7,4 +7,5 @@ export enum StatusCodeEnum {
   Forbidden = 'forbidden',
   NotFound = 'notFound',
   Conflict = 'conflict',
+  Unauthorized = 'unauthorized',
 }

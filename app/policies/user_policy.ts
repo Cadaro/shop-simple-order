@@ -1,36 +1,21 @@
 import User from '#models/user';
-import { UserAbilitiesEnum, UserRolesEnum } from '#types/user';
 import { BasePolicy } from '@adonisjs/bouncer';
 import { AuthorizerResponse } from '@adonisjs/bouncer/types';
 
 export default class UserPolicy extends BasePolicy {
   /**
-   * Checks if the user can view their own data:
-   * - must have USER role,
-   * - must have the USERS_VIEW ability.
+   * User middleware ensures authentication and abilities
+   * Any authenticated user can view their own data
    */
-  view(user: User): AuthorizerResponse {
-    if (!user.currentAccessToken) {
-      return false;
-    }
-    return (
-      user.role === UserRolesEnum.USER &&
-      user.currentAccessToken.allows(UserAbilitiesEnum.USERS_VIEW)
-    );
+  view(_user: User): AuthorizerResponse {
+    return true;
   }
 
-  /** Allow user to edit their own data
-   * - must have USER role,
-   * - must have the USERS_UPDATE ability,
-   * - can edit only their own data.
+  /**
+   * User middleware ensures authentication and abilities
+   * Any authenticated user can edit their own data
    */
-  edit(user: User): AuthorizerResponse {
-    if (!user.currentAccessToken) {
-      return false;
-    }
-    return (
-      user.role === UserRolesEnum.USER &&
-      user.currentAccessToken.allows(UserAbilitiesEnum.USERS_UPDATE)
-    );
+  edit(_user: User): AuthorizerResponse {
+    return true;
   }
 }

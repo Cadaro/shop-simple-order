@@ -13,36 +13,13 @@ export default class TokenService implements TokenProvider {
     /*
      * Create access token with abilities:
      * - '*' for all abilities (admin)
-     * - 'orders:create' for creating orders (non-admin)
-     * - 'orders:view' for viewing orders (non-admin)
-     * - 'users:update' for updating user data (non-admin)
-     * - 'stocks:view' for viewing stock (non-admin)
-     * - 'invoices-order:view' for viewing invoice orders (non-admin)
-     * - 'invoices-data:view' for viewing invoice data (non-admin)
-     * - 'invoices-data:create' for creating invoice data (non-admin)
-     * - 'invoices-data:update' for updating invoice data (non-admin)
-     * - 'delivery-data:view' for viewing delivery data (non-admin)
-     * - 'delivery-data:create' for creating delivery data (non-admin)
-     * - 'delivery-data:update' for updating delivery data (non-admin)
+     * - 'user' for basic user abilities (non-admin)
      */
 
     if (role === UserRolesEnum.ADMIN) {
-      abilities.push(UserAbilitiesEnum.ALL);
+      abilities.push(UserAbilitiesEnum.ADMIN);
     } else {
-      abilities.push(
-        UserAbilitiesEnum.ORDERS_CREATE,
-        UserAbilitiesEnum.ORDERS_VIEW,
-        UserAbilitiesEnum.USERS_VIEW,
-        UserAbilitiesEnum.USERS_UPDATE,
-        UserAbilitiesEnum.STOCKS_VIEW,
-        UserAbilitiesEnum.INVOICES_ORDER_VIEW,
-        UserAbilitiesEnum.INVOICES_DATA_VIEW,
-        UserAbilitiesEnum.DELIVERY_DATA_VIEW,
-        UserAbilitiesEnum.INVOICES_DATA_CREATE,
-        UserAbilitiesEnum.INVOICES_DATA_UPDATE,
-        UserAbilitiesEnum.DELIVERY_DATA_CREATE,
-        UserAbilitiesEnum.DELIVERY_DATA_UPDATE
-      );
+      abilities.push(UserAbilitiesEnum.USER);
     }
 
     return abilities;

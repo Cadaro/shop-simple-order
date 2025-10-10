@@ -26,30 +26,19 @@ export default class UsersController {
   }
 
   async index({ auth, bouncer, response }: HttpContext) {
-    if (!auth.isAuthenticated) {
-      return response.unauthorized();
-    }
-
+    // User middleware ensures authentication, so auth.user is guaranteed to exist
     if (await bouncer.with(UserPolicy).denies('view')) {
       return response.forbidden();
     }
 
     const userService = new UserService();
-
     const userData: UserData = await userService.fetchUserData(auth.user!.uuid);
 
     return response.ok(userData);
   }
 
   async update({ auth, bouncer, request, response }: HttpContext) {
-    if (!auth.isAuthenticated) {
-      return response.unauthorized();
-    }
-
-    if (!auth.user) {
-      return response.unauthorized();
-    }
-
+    // User middleware ensures authentication, so auth.user is guaranteed to exist
     if (await bouncer.with(UserPolicy).denies('edit')) {
       return response.forbidden();
     }
@@ -59,7 +48,7 @@ export default class UsersController {
       if (!validatedUserData.firstName && !validatedUserData.lastName) {
         return response.badRequest();
       }
-      const updatedUserData: Partial<UserData> = { userId: auth.user.uuid, ...validatedUserData };
+      const updatedUserData: Partial<UserData> = { userId: auth.user!.uuid, ...validatedUserData };
       await this.userService.updateUser(updatedUserData);
       return response.noContent();
     } catch (e) {

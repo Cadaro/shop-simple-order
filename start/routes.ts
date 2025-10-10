@@ -23,21 +23,21 @@ router
         .params({ stocks: 'itemId' })
         .apiOnly()
         .only(['index', 'show', 'store'])
-        .use(['store'], middleware.auth());
+        .use(['store'], middleware.admin());
       router
         .resource('orders', OrdersController)
         .params({ orders: 'orderId' })
         .apiOnly()
         .only(['index', 'store', 'show'])
-        .use(['index', 'store', 'show'], middleware.auth());
+        .use(['index', 'store', 'show'], middleware.user());
       router
         .resource('customers/invoice-data', InvoiceCustomersController)
         .apiOnly()
         .only(['index', 'store'])
-        .use(['index', 'store'], middleware.auth());
+        .use(['index', 'store'], middleware.user());
       router
         .patch('customers/invoice-data', [InvoiceCustomersController, 'update'])
-        .use(middleware.auth());
+        .use(middleware.user());
     });
     router
       .group(() => {
@@ -45,8 +45,8 @@ router
           .resource('users', UsersController)
           .only(['index'])
           .apiOnly()
-          .use('index', middleware.auth());
-        router.patch('users', [UsersController, 'update']).use(middleware.auth());
+          .use('index', middleware.user());
+        router.patch('users', [UsersController, 'update']).use(middleware.user());
         router.resource('users', UsersController).apiOnly().only(['store']);
         router.resource('token', TokenController).apiOnly().only(['store']);
       })
