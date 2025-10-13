@@ -105,22 +105,40 @@ export const createInvoiceCustomerValidator = vine.compile(
 );
 export const updateInvoiceCustomerValidator = vine.compile(
   vine.object({
-    firstName: vine.string().minLength(3).maxLength(50).optional(),
-    lastName: vine.string().minLength(2).maxLength(50).optional(),
-    companyName: vine.string().minLength(2).maxLength(100).optional(),
-    taxId: vine.string().minLength(2).maxLength(100).optional(),
-    customerType: vine.enum(InvoiceCustomerTypeEnum).optional(),
-    address: vine
-      .object({
-        streetName: vine.string().minLength(3),
-        streetNumber: vine.string().minLength(1).maxLength(10),
-        apartmentNumber: vine.string().minLength(1).maxLength(10).optional(),
-        city: vine.string().minLength(3).maxLength(50),
-        postalCode: vine.string().use(postalCodeForCountry()),
-        region: vine.string().minLength(2).maxLength(50).optional(),
-        countryCode: vine.enum(CountryCode),
-      })
-      .optional(),
+    firstName: vine
+      .string()
+      .minLength(3)
+      .maxLength(50)
+      .optional()
+      .requiredWhen('customerType', '=', InvoiceCustomerTypeEnum.PERSON),
+    lastName: vine
+      .string()
+      .minLength(2)
+      .maxLength(50)
+      .optional()
+      .requiredWhen('customerType', '=', InvoiceCustomerTypeEnum.PERSON),
+    companyName: vine
+      .string()
+      .minLength(2)
+      .maxLength(100)
+      .optional()
+      .requiredWhen('customerType', '=', InvoiceCustomerTypeEnum.COMPANY),
+    taxId: vine
+      .string()
+      .minLength(2)
+      .maxLength(100)
+      .optional()
+      .requiredWhen('customerType', '=', InvoiceCustomerTypeEnum.COMPANY),
+    customerType: vine.enum(InvoiceCustomerTypeEnum),
+    address: vine.object({
+      streetName: vine.string().minLength(3),
+      streetNumber: vine.string().minLength(1).maxLength(10),
+      apartmentNumber: vine.string().minLength(1).maxLength(10).optional(),
+      city: vine.string().minLength(3).maxLength(50),
+      postalCode: vine.string().use(postalCodeForCountry()),
+      region: vine.string().minLength(2).maxLength(50).optional(),
+      countryCode: vine.enum(CountryCode),
+    }),
   })
 );
 

@@ -56,7 +56,7 @@ export default class InvoiceCustomer implements BaseInvoiceCustomer {
    * @param data - The new invoice customer data.
    * @throws Error if invoice data for the user is not found.
    */
-  async updateCustomerData(data: Partial<InvoiceCustomerWithUserId>): Promise<void> {
+  async updateCustomerData(data: InvoiceCustomerWithUserId): Promise<void> {
     await db.transaction(async (trx) => {
       const invoiceCustomer = await InvoiceCustomers.findBy(
         { userId: data.userId },

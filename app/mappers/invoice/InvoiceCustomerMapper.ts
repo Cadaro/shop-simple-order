@@ -55,22 +55,24 @@ export default class InvoiceCustomerMapper {
     return result as InvoiceCustomerData;
   }
   mapInvoiceCustomerTypeToInvoiceCustomerModel(
-    invoiceCustomerData: Partial<InvoiceCustomerWithUserId>
+    invoiceCustomerData: InvoiceCustomerWithUserId
   ): Partial<InvoiceCustomers> {
-    return {
+    const result: any = {
       userId: invoiceCustomerData.userId,
       firstName: invoiceCustomerData.firstName,
       lastName: invoiceCustomerData.lastName,
       companyName: invoiceCustomerData.companyName,
       taxId: invoiceCustomerData.taxId,
-      city: invoiceCustomerData.address?.city,
-      streetName: invoiceCustomerData.address?.streetName,
-      streetNumber: invoiceCustomerData.address?.streetNumber,
-      countryCode: invoiceCustomerData.address?.countryCode,
-      apartmentNumber: invoiceCustomerData.address?.apartmentNumber,
-      postalCode: invoiceCustomerData.address?.postalCode,
-      region: invoiceCustomerData.address?.region,
+      city: invoiceCustomerData.address!.city,
+      streetName: invoiceCustomerData.address!.streetName,
+      streetNumber: invoiceCustomerData.address!.streetNumber,
+      apartmentNumber: invoiceCustomerData.address?.apartmentNumber ?? null,
+      region: invoiceCustomerData.address?.region ?? null,
+      countryCode: invoiceCustomerData.address!.countryCode,
+      postalCode: invoiceCustomerData.address!.postalCode,
       customerType: invoiceCustomerData.customerType,
     };
+
+    return result;
   }
 }

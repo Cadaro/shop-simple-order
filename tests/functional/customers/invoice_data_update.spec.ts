@@ -91,7 +91,7 @@ test.group('Customers invoice data update', (group) => {
     const token = await tokenService.createToken(userWithPersonData);
 
     const response = await client
-      .patch('/api/customers/invoice-data')
+      .put('/api/customers/invoice-data')
       .json(invoiceDataToUpdate)
       .bearerToken(token.token);
 
@@ -119,7 +119,7 @@ test.group('Customers invoice data update', (group) => {
     const token = await tokenService.createToken(userWithCompanyData);
 
     const response = await client
-      .patch('/api/customers/invoice-data')
+      .put('/api/customers/invoice-data')
       .json(invoiceDataToUpdate)
       .bearerToken(token.token);
 

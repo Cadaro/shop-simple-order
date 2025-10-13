@@ -36,7 +36,7 @@ router
         .only(['index', 'store'])
         .use(['index', 'store'], middleware.user());
       router
-        .patch('customers/invoice-data', [InvoiceCustomersController, 'update'])
+        .put('customers/invoice-data', [InvoiceCustomersController, 'update'])
         .use(middleware.user());
     });
     router
