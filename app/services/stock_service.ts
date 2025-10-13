@@ -20,10 +20,10 @@ export default class StockService {
 
   async fetchSingleStockItem(itemId: string) {
     const singleStock = await Stock.findBy({ itemId });
-    await singleStock!.load('photos');
     if (!singleStock) {
       throw new Error(`Stock item ${itemId} not found`);
     }
+    await singleStock!.load('photos');
     return singleStock.serialize() as StockItem;
   }
 
